@@ -16,20 +16,20 @@
 - Configuration TypeScript
 - Configuration ESLint/Prettier
 
-  1.1.2 Configuration outils de développement → **2j**
+1.1.2 Configuration outils de développement → **2j**
 
 - Configuration Git workflow
 - Setup environnements (dev/prod)
 - Variables d'environnement
 
-  1.1.3 Installation et configuration bibliothèques → **3j**
+1.1.3 Installation et configuration bibliothèques → **3j**
 
 - React Router
 - State management (Zustand)
 - Bibliothèques de cartographie (Mapbox)
 - GSAP pour animations
 
-  1.1.4 Configuration build et déploiement → **1j**
+1.1.4 Configuration build et déploiement → **1j**
 
 - Scripts de build
 - Configuration CI/CD basique
@@ -41,13 +41,13 @@
 - Organisation components/pages/services
 - Stratégie de routing
 
-  1.2.2 Design system de base → **2j**
+1.2.2 Design system de base → **2j**
 
 - Définition palette de couleurs
 - Typographie
 - Composants UI de base
 
-  1.2.3 Configuration des services API → **1j**
+1.2.3 Configuration des services API → **1j**
 
 - Client HTTP (Axios)
 - Interceptors et gestion d'erreurs
@@ -58,11 +58,11 @@
 
 - Vitest setup
 
-  1.3.2 Configuration tests E2E → **1j**
+1.3.2 Configuration tests E2E → **1j**
 
 - Playwright setup
 
-  1.3.3 Configuration outils qualité → **1j**
+1.3.3 Configuration outils qualité → **1j**
 
 - SonarQube for Code coverage
 
@@ -79,14 +79,14 @@
 - Page de récupération de mot de passe
 - Validation formulaires
 
-  2.1.2 Intégration API auth → **2j**
+2.1.2 Intégration API auth → **2j**
 
 - Service d'authentification
 - Gestion tokens (JWT/session)
 - Refresh token automatique
 - Logout et nettoyage
 
-  2.1.3 State management utilisateur → **1j**
+2.1.3 State management utilisateur → **1j**
 
 - Store Zustand pour user state
 - Persistance session (localStorage/sessionStorage)
@@ -106,14 +106,14 @@
 - **Abonné Premium**: Carte complète, analyses illimitées, données satellites, projections IA, exports
 - **Admin**: Toutes fonctionnalités + gestion utilisateurs
 
-  2.2.2 Composants de protection → **2j**
+2.2.2 Composants de protection → **2j**
 
 - ProtectedRoute component
 - ConditionalRender component (affichage conditionnel selon permissions)
 - FeatureGate component (contrôle d'accès granulaire)
 - Redirections appropriées
 
-  2.2.3 Hooks personnalisés d'autorisation → **1j**
+2.2.3 Hooks personnalisés d'autorisation → **1j**
 
 - useAuth hook (état authentification)
 - usePermissions hook (vérification permissions)
@@ -127,7 +127,7 @@
 - Messages informatifs sur limitations
 - Call-to-action upgrade subtils
 
-  2.3.2 Page de gestion abonnement → **1j**
+2.3.2 Page de gestion abonnement → **1j**
 
 - Affichage plan actuel
 - Statistiques d'utilisation (analyses restantes, etc.)
@@ -147,7 +147,7 @@
 - Configuration tuiles satellitaires
 - Responsive et optimisations mobiles
 
-  3.1.2 Navigation et contrôles → **3j**
+3.1.2 Navigation et contrôles → **3j**
 
 - Zoom, pan, rotation
 - Géolocalisation utilisateur
@@ -167,14 +167,14 @@
 - Légende dynamique
 - **🔐 Restriction layers premium selon abonnement**
 
-  3.2.2 Visualisation données satellites → **3j**
+3.2.2 Visualisation données satellites → **3j**
 
 - Affichage tuiles raster
 - Intégration données NDVI
 - Color mapping pour végétation
 - **🔐 Watermark ou résolution limitée pour utilisateurs gratuits**
 
-  3.2.3 Markers et zones sensibles → **3j**
+3.2.3 Markers et zones sensibles → **3j**
 
 - Clustering pour performance
 - Popups informationnels
@@ -188,14 +188,14 @@
 - Calcul de métriques zone sélectionnée
 - **🔐 Limite de zones sauvegardées pour utilisateurs gratuits**
 
-  3.3.2 Timeline temporelle → **3j**
+3.3.2 Timeline temporelle → **3j**
 
 - Slider pour navigation temporelle
 - Animation évolution dans le temps
 - Comparaison avant/après
 - **🔐 Historique limité (ex: 6 mois) pour utilisateurs gratuits**
 
-  3.3.3 Recherche et filtres géographiques → **1j**
+3.3.3 Recherche et filtres géographiques → **1j**
 
 - Recherche par nom de lieu
 - Jump to location
@@ -215,13 +215,13 @@
 - Graphiques en barres (comparaisons)
 - Pie charts (répartition)
 
-  4.1.2 Heatmaps et visualisations avancées → **3j**
+4.1.2 Heatmaps et visualisations avancées → **3j**
 
 - Calendrier de chaleur
 - Matrice de corrélation
 - **🔐 Visualisations avancées pour abonnés premium uniquement**
 
-  4.1.3 Composants interactifs → **1j**
+4.1.3 Composants interactifs → **1j**
 
 - Tooltips détaillés
 - Click-to-drill-down
@@ -235,14 +235,14 @@
 - Favoris utilisateur
 - **🔐 Indicateurs avancés pour premium**
 
-  4.2.2 Comparaison zones géographiques → **3j**
+4.2.2 Comparaison zones géographiques → **3j**
 
 - Sélection multiple zones
 - Tableau comparatif
 - Graphiques de comparaison
 - **🔐 Limite 2 zones pour gratuit, illimité pour premium**
 
-  4.2.3 Export et partage analyses → **2j**
+4.2.3 Export et partage analyses → **2j**
 
 - Export PNG/PDF
 - Export données CSV
@@ -257,13 +257,13 @@
 - Filtres par sévérité/type
 - **🔐 Liste complète pour premium, top 10 pour gratuit**
 
-  4.3.2 Fiches détaillées zones → **2j**
+4.3.2 Fiches détaillées zones → **2j**
 
 - Vue détail zone
 - Historique et tendances
 - Recommandations
 
-  4.3.3 Alertes et notifications → **1j**
+4.3.3 Alertes et notifications → **1j**
 
 - Système de badges
 - Highlight nouvelles alertes
@@ -283,12 +283,12 @@
 - Indicateurs de santé écologique
 - Comparaison période précédente
 
-  5.1.2 Carte récapitulative → **2j**
+5.1.2 Carte récapitulative → **2j**
 
 - Mini-carte avec zones critiques
 - Click-through vers carte complète
 
-  5.1.3 Résumé activité récente → **1j**
+5.1.3 Résumé activité récente → **1j**
 
 - Feed d'événements
 - Changements significatifs
@@ -302,13 +302,13 @@
 - Scénarios multiples
 - **🔐 Fonctionnalité exclusivement premium**
 
-  5.2.2 Timeline projections futures → **2j**
+5.2.2 Timeline projections futures → **2j**
 
 - Slider temporel futur
 - Animation scénarios
 - **🔐 Premium uniquement**
 
-  5.2.3 Comparaison scénarios → **1j**
+5.2.3 Comparaison scénarios → **1j**
 
 - Vue côte-à-côte
 - Analyse delta
@@ -321,12 +321,12 @@
 - Drag & drop widgets
 - Sauvegarde layouts
 
-  5.3.2 Filtres globaux → **1j**
+5.3.2 Filtres globaux → **1j**
 
 - Date range picker
 - Sélection région
 
-  5.3.3 Thèmes et préférences → **1j**
+5.3.3 Thèmes et préférences → **1j**
 
 - Mode sombre/clair
 - Préférences d'affichage
@@ -342,13 +342,13 @@
 - Page transitions fluides
 - Loading states animés
 
-  6.1.2 Micro-interactions → **2j**
+6.1.2 Micro-interactions → **2j**
 
 - Hover effects
 - Click feedback
 - Scroll animations
 
-  6.1.3 Animations de données → **2j**
+6.1.3 Animations de données → **2j**
 
 - Animated number counters
 - Chart animations
@@ -362,13 +362,13 @@
 - Structure des fichiers de traduction
 - Configuration langues (FR/EN minimum)
 
-  6.2.2 Traduction de l'interface → **1j**
+6.2.2 Traduction de l'interface → **1j**
 
 - Traduction composants UI
 - Traduction messages d'erreur
 - Traduction labels et tooltips
 
-  6.2.3 Gestion locale dynamique → **1j**
+6.2.3 Gestion locale dynamique → **1j**
 
 - Sélecteur de langue
 - Persistance préférence langue
@@ -382,14 +382,14 @@
 - Touch gestures sur carte
 - Simplification UI
 
-  6.3.2 Adaptations tablet & accessibility → **1j**
+6.3.2 Adaptations tablet & accessibility → **1j**
 
 - Layout optimisé
 - ARIA labels et rôles
 - Navigation clavier
 - Contraste des couleurs (WCAG AA)
 
-  6.3.3 Tests multi-devices → **1j**
+6.3.3 Tests multi-devices → **1j**
 
 - Tests responsive
 - Tests accessibilité (axe-core)
@@ -406,13 +406,13 @@
 - Intégration React Three Fiber
 - Configuration scène 3D
 
-  7.1.2 Visualisation 3D territoire → **3j**
+7.1.2 Visualisation 3D territoire → **3j**
 
 - Modèle terrain 3D
 - Mapping données sur relief
 - Caméra et contrôles
 
-  7.1.3 Animations 3D → **2j**
+7.1.3 Animations 3D → **2j**
 
 - Transitions 2D/3D
 - Effets visuels
@@ -424,13 +424,13 @@
 - Route-based splitting
 - Dynamic imports
 
-  7.2.2 Optimisation données → **2j**
+7.2.2 Optimisation données → **2j**
 
 - Caching stratégies
 - Debouncing/throttling
 - Virtualisation listes longues
 
-  7.2.3 Optimisation rendu → **1j**
+7.2.3 Optimisation rendu → **1j**
 
 - React.memo, useMemo
 - Profiling et corrections
@@ -447,13 +447,13 @@
 - Tests hooks personnalisés
 - Tests composants d'autorisation
 
-  8.1.2 Tests d'intégration → **2j**
+8.1.2 Tests d'intégration → **2j**
 
 - Flux utilisateur principaux
 - Intégration API
 - Tests flux d'authentification
 
-  8.1.3 Tests E2E → **1j**
+8.1.3 Tests E2E → **1j**
 
 - Scénarios critiques
 - Tests multi-utilisateurs (gratuit vs premium)
@@ -465,12 +465,12 @@
 - JSDoc
 - Commentaires complexes
 
-  8.2.2 Documentation composants → **2j**
+8.2.2 Documentation composants → **2j**
 
 - Storybook setup
 - Stories composants principaux
 
-  8.2.3 Guide développeur → **1j**
+8.2.3 Guide développeur → **1j**
 
 - README technique
 - Guide contribution
