@@ -424,3 +424,4 @@ VITE_ENV=development
 - [Zustand Documentation](https://github.com/pmndrs/zustand)
 - [Vite Documentation](https://vitejs.dev/)
 - [Tailwind CSS Documentation](https://tailwindcss.com/)
+
