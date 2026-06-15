@@ -25,7 +25,7 @@ jobs:
       - name: Clone central repo
         run: |
           git clone \
-            https://x-access-token:${{ secrets.BIOWATCH_MIRROR_TOKEN }}@github.com/SmilyTheOne/biowatch.git \
+            https://x-access-token:${{ secrets.BIOWATCH_MIRROR_TOKEN }}@github.com/BiowatchOrg/biowatch.git \
             /tmp/biowatch-central
 
       - name: Copy source files into frontend/
