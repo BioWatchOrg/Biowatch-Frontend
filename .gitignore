@@ -32,6 +32,7 @@ yarn-error.log*
 # agents related ignore files
 .agents/
 .claude/
-.github/
+!.github/workflows/*.yml
+.github/skills
 _bmad/
 backend/
