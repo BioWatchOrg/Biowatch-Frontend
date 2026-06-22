@@ -380,28 +380,27 @@
 ```bash
 # Installation des dépendances / Install dependencies
 npm install
-# ou / or
-yarn install
 
 # Lancer le serveur de développement / Start development server
 npm run dev
-# ou / or
-yarn dev
 
-# Lancer les tests / Run tests
-npm run test
-# ou / or
-yarn test
+# Vérifier le typage TypeScript / Validate TypeScript typing
+npm run typecheck
 
-# Tests e2e / e2e tests
-npm run test:e2e
-# ou / or
-yarn test:e2e
+# Vérifier la qualité ESLint / Run ESLint
+npm run lint
+
+# Corriger automatiquement les erreurs lint corrigibles / Auto-fix lint issues
+npm run lint:fix
+
+# Appliquer le formatage partagé Prettier / Apply shared Prettier formatting
+npm run format
+
+# Vérifier le formatage sans modifier les fichiers / Check formatting only
+npm run format:check
 
 # Build pour la production / Build for production
 npm run build
-# ou / or
-yarn build
 ```
 
 ---
@@ -424,4 +423,3 @@ VITE_ENV=development
 - [Zustand Documentation](https://github.com/pmndrs/zustand)
 - [Vite Documentation](https://vitejs.dev/)
 - [Tailwind CSS Documentation](https://tailwindcss.com/)
-

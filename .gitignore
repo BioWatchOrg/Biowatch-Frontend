@@ -6,6 +6,10 @@
 # Node
 node_modules/
 .claude/node_modules/
+.npm-cache/
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
 
 # Editor / OS
 .DS_Store
@@ -24,3 +28,10 @@ yarn-error.log*
 
 # Local Claude settings
 .claude/settings.local.json
+
+# agents related ignore files
+.agents/
+.claude/
+.github/
+_bmad/
+backend/
