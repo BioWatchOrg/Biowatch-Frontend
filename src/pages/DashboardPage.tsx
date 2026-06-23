@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { clearAuthSession } from '../features/auth/services/authSession';
+import { clearDummySession } from '../features/auth/utils/dummyAuth';
 
 function DashboardPage() {
   return (
@@ -14,7 +14,7 @@ function DashboardPage() {
         <Link
           to="/login"
           className="auth-button auth-button-secondary"
-          onClick={() => clearAuthSession()}
+          onClick={() => clearDummySession()}
         >
           Se deconnecter
         </Link>
