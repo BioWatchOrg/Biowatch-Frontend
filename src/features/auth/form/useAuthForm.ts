@@ -22,9 +22,7 @@ function resolveResult(result: AuthFormSubmitResult | void): AuthFormSubmitResul
   return result ?? {};
 }
 
-function useAuthForm<TValues extends AuthFormValues>(
-  config: AuthFormConfig<TValues>,
-): UseAuthFormResult<TValues> {
+function useAuthForm<TValues extends AuthFormValues>(config: AuthFormConfig<TValues>): UseAuthFormResult<TValues> {
   const [values, setValues] = useState<TValues>(config.initialValues);
   const [errors, setErrors] = useState<AuthFormErrors<TValues>>({});
   const [isLoading, setIsLoading] = useState(false);
