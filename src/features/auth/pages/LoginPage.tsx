@@ -1,9 +1,10 @@
-import { FormEvent, useState } from 'react';
+import { useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthField from '../components/AuthField';
 import AuthLayout from '../components/AuthLayout';
+import useAuthForm from '../form/useAuthForm';
 import { getAuthMessage } from '../messages/authMessages';
-import { persistDummySession } from '../utils/dummyAuth';
+import { persistAuthSession } from '../services/authSession';
 import { validateLogin } from '../validation/authValidation';
 
 type LoginForm = {
@@ -18,34 +19,21 @@ const INITIAL_FORM: LoginForm = {
 
 function LoginPage() {
   const navigate = useNavigate();
-  const [form, setForm] = useState<LoginForm>(INITIAL_FORM);
-  const [errors, setErrors] = useState<Partial<LoginForm>>({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [globalError, setGlobalError] = useState<string | null>(null);
-
-  const submitForm = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const validationErrors = validateLogin(form);
-    setErrors(validationErrors);
-    setGlobalError(null);
-
-    if (Object.keys(validationErrors).length > 0) {
-      return;
-    }
-
-    setIsLoading(true);
-
-    window.setTimeout(() => {
+  const initialValues = useMemo(() => INITIAL_FORM, []);
+  const { values, errors, isLoading, globalError, submitForm, setValue } = useAuthForm<LoginForm>({
+    initialValues,
+    validate: validateLogin,
+    submit: (form) => {
       try {
-        persistDummySession(form.email);
+        persistAuthSession(form.email);
         navigate('/dashboard', { replace: true });
       } catch {
-        setGlobalError(getAuthMessage('loginError'));
-      } finally {
-        setIsLoading(false);
+        return { globalError: getAuthMessage('loginError') };
       }
-    }, 350);
-  };
+
+      return {};
+    },
+  });
 
   return (
     <AuthLayout
@@ -57,8 +45,8 @@ function LoginPage() {
           id="login-email"
           label="Adresse email"
           type="email"
-          value={form.email}
-          onChange={(email) => setForm((previous) => ({ ...previous, email }))}
+          value={values.email}
+          onChange={(email) => setValue('email', email)}
           error={errors.email}
           autoComplete="email"
         />
@@ -66,8 +54,8 @@ function LoginPage() {
           id="login-password"
           label="Mot de passe"
           type="password"
-          value={form.password}
-          onChange={(password) => setForm((previous) => ({ ...previous, password }))}
+          value={values.password}
+          onChange={(password) => setValue('password', password)}
           error={errors.password}
           autoComplete="current-password"
         />
