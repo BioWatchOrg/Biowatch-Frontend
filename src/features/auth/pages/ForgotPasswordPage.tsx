@@ -1,7 +1,8 @@
-import { FormEvent, useState } from 'react';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import AuthField from '../components/AuthField';
 import AuthLayout from '../components/AuthLayout';
+import useAuthForm from '../form/useAuthForm';
 import { getAuthMessage } from '../messages/authMessages';
 import { validateForgotPassword } from '../validation/authValidation';
 
@@ -14,35 +15,19 @@ const INITIAL_FORM: ForgotPasswordForm = {
 };
 
 function ForgotPasswordPage() {
-  const [form, setForm] = useState<ForgotPasswordForm>(INITIAL_FORM);
-  const [errors, setErrors] = useState<Partial<ForgotPasswordForm>>({});
-  const [isLoading, setIsLoading] = useState(false);
-  const [globalError, setGlobalError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
-  const submitForm = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const validationErrors = validateForgotPassword(form);
-    setErrors(validationErrors);
-    setGlobalError(null);
-    setSuccessMessage(null);
-
-    if (Object.keys(validationErrors).length > 0) {
-      return;
-    }
-
-    setIsLoading(true);
-
-    window.setTimeout(() => {
-      try {
-        setSuccessMessage(getAuthMessage('forgotSuccess'));
-      } catch {
-        setGlobalError(getAuthMessage('forgotError'));
-      } finally {
-        setIsLoading(false);
-      }
-    }, 350);
-  };
+  const initialValues = useMemo(() => INITIAL_FORM, []);
+  const { values, errors, isLoading, globalError, successMessage, submitForm, setValue } =
+    useAuthForm<ForgotPasswordForm>({
+      initialValues,
+      validate: validateForgotPassword,
+      submit: () => {
+        try {
+          return { successMessage: getAuthMessage('forgotSuccess') };
+        } catch {
+          return { globalError: getAuthMessage('forgotError') };
+        }
+      },
+    });
 
   return (
     <AuthLayout
@@ -54,8 +39,8 @@ function ForgotPasswordPage() {
           id="forgot-email"
           label="Adresse email"
           type="email"
-          value={form.email}
-          onChange={(email) => setForm({ email })}
+          value={values.email}
+          onChange={(email) => setValue('email', email)}
           error={errors.email}
           autoComplete="email"
         />
