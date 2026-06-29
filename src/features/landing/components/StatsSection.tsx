@@ -18,8 +18,8 @@ function StatsSection() {
         <dl className="lp-stats-band">
           {STATS.map((stat) => (
             <div key={stat.id} className="lp-stat">
-              <dt className="lp-stat-value">{stat.value}</dt>
-              <dd className="lp-stat-label">{stat.label}</dd>
+              <dt className="lp-stat-label">{stat.label}</dt>
+              <dd className="lp-stat-value">{stat.value}</dd>
             </div>
           ))}
         </dl>

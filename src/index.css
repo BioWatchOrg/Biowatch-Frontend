@@ -627,10 +627,13 @@ form {
 }
 
 .lp-stat {
+  display: flex;
+  flex-direction: column-reverse;
   text-align: center;
 }
 
 .lp-stat-value {
+  margin: 0;
   font-size: clamp(1.8rem, 4vw, 2.5rem);
   font-weight: 700;
   color: var(--lp-ink);
