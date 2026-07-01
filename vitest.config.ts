@@ -5,7 +5,7 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['src/_tests_/setup.ts'],
-    include: ['src/_tests_/**/*.test.tsx'],
+    include: ['src/_tests_/**/*.test.tsx', 'src/features/**/tests/**/*.test.{ts,tsx}'],
     coverage: {
       reporter: ['text', 'json', 'html'],
       thresholds: {

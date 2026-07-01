@@ -1,16 +1,19 @@
 import { render, screen } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import App from '../App';
 
-describe('App', () => {
-  it('renders the BioWatch heading', () => {
-    render(<App />);
-    expect(screen.getByRole('heading', { level: 1 })).toHaveTextContent(
-      'Vite + React + TypeScript base is ready.',
-    );
-  });
+function renderApp(initialPath: string): void {
+  render(
+    <MemoryRouter initialEntries={[initialPath]}>
+      <App />
+    </MemoryRouter>,
+  );
+}
 
-  it('renders the BioWatch eyebrow label', () => {
-    render(<App />);
-    expect(screen.getByText('BioWatch Frontend')).toBeInTheDocument();
+describe('App smoke', () => {
+  it('renders login page from root route', () => {
+    renderApp('/');
+
+    expect(screen.getByRole('heading', { name: 'Bon retour' })).toBeInTheDocument();
   });
 });
