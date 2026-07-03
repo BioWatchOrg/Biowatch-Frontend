@@ -11,9 +11,23 @@ function renderApp(initialPath: string): void {
 }
 
 describe('App smoke', () => {
-  it('renders login page from root route', () => {
+  it('renders the landing page from the root route', () => {
     renderApp('/');
 
+    expect(
+      screen.getByRole('heading', { level: 1, name: /Surveillez vos ecosystemes/i }),
+    ).toBeInTheDocument();
+  });
+
+  it('renders the login page from the login route', () => {
+    renderApp('/login');
+
     expect(screen.getByRole('heading', { name: 'Bon retour' })).toBeInTheDocument();
+  });
+
+  it('renders a legal placeholder page from a legal route', () => {
+    renderApp('/confidentialite');
+
+    expect(screen.getByRole('heading', { level: 1, name: 'Confidentialite' })).toBeInTheDocument();
   });
 });
