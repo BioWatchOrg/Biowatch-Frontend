@@ -1,0 +1,38 @@
+# Secrets
+.env
+.env.local
+.env.*.local
+
+# Node
+node_modules/
+.claude/node_modules/
+.npm-cache/
+*.tsbuildinfo
+vite.config.js
+vite.config.d.ts
+
+# Editor / OS
+.DS_Store
+.vscode/
+.idea/
+
+# Build outputs
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local Claude settings
+.claude/settings.local.json
+
+# agents related ignore files
+.agents/
+.claude/
+!.github/workflows/*.yml
+.github/skills
+_bmad/
+backend/
