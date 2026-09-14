@@ -19,6 +19,7 @@ vite.config.d.ts
 # Build outputs
 dist/
 build/
+coverage/
 
 # Logs
 *.log
