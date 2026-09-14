@@ -94,3 +94,16 @@ findings.
 Post the full review (general review + DoD compliance + the two verdicts) as a single top-level
 PR comment via `gh pr comment`. Do not use inline comments, and do not just answer in your final
 message — the comment is the deliverable.
+
+Post it with a single Bash call in this exact form (heredoc inside the command substitution, not
+a separate file-write step — you only have `gh`/`cat`/`grep`/`glob` tools, no `Write`/`Edit`):
+
+```
+gh pr comment <PR_NUMBER> --body "$(cat <<'REVIEW_EOF'
+<the full review markdown>
+REVIEW_EOF
+)"
+```
+
+If this call fails or is denied, retry it — do not silently give up and end the turn without a
+posted comment.
