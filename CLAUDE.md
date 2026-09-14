@@ -21,12 +21,20 @@ Toutes les tâches sont trackées dans Notion, pas dans le repo. Chaque page de 
 
 Lire la DoR/DoD depuis la page. **Ne pas inventer de critères d'acceptation.**
 
+### Documenter une feature (à chaque MR)
+
+Chaque feature livrée doit être documentée dans la base Notion **Documentation Technique**
+via le tool `mcp__biowatch-notion__notion_create_doc`. La doc doit être **concise**
+(compréhensible en < 2 min) avec un titre clair pour s'y retrouver. Le tool applique le
+template imposé (Résumé 2 phrases → Structure → Exemple/workflow → Requirements optionnel)
+et est **idempotent par titre** : re-documenter une feature met à jour la page existante.
+
 ### Setup par membre (une fois)
 
-Le serveur MCP est écrit en JavaScript (Node, ESM) et vit dans `.claude/notion.mjs`. Il lit `NOTION_TOKEN` depuis le `.env` à la racine (gitignored). Chaque membre doit :
+Le serveur MCP est écrit en JavaScript (Node, ESM) et vit dans `.claude/notion.mjs`. Il lit deux tokens depuis le `.env` à la racine (gitignored). Chaque membre doit :
 
-1. Demander un token au propriétaire du projet **ou** créer une intégration sur https://www.notion.so/my-integrations et faire partager la racine BioWatch avec.
-2. Ajouter `NOTION_TOKEN=ntn_...` (ou `secret_...`) dans son `.env` local à la racine du repo.
+1. Demander les tokens au propriétaire du projet **ou** créer une intégration sur https://www.notion.so/my-integrations et faire partager la racine BioWatch (lecture) **et** la base Documentation Technique (écriture) avec.
+2. Ajouter `NOTION_TOKEN=ntn_...` (lecture tâches) et `NOTION_TOKEN_DOC=ntn_...` (écriture doc) dans son `.env` local à la racine du repo.
 3. Installer les dépendances du serveur MCP : `cd .claude && npm install` (une seule fois).
 4. Relancer Claude Code.
 
