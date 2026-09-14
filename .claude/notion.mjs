@@ -1,11 +1,15 @@
 // BioWatch Notion MCP server (stdio, JS).
 //
-// Exposes two tools to Claude Code so every team member can read tasks from Notion:
+// Exposes tools to Claude Code so every team member can read tasks from Notion
+// and write concise feature documentation as MRs land:
 //   - notion_get_subpages: recursive index of the task tree (titles + ids)
 //   - notion_get_page_content: full body of a task page (Markdown-like)
+//   - notion_create_doc: create/update a feature doc page in the
+//     "Documentation Technique" database, following the team template
 //
-// Requires NOTION_TOKEN in the local .env file (gitignored). The Notion
-// integration must be granted access to the BioWatch root page.
+// Requires two tokens in the local .env file (gitignored):
+//   - NOTION_TOKEN: read access, granted on the BioWatch root page
+//   - NOTION_TOKEN_DOC: write access, granted on the Documentation Technique DB
 
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
@@ -24,6 +28,8 @@ const REPO_ROOT = resolve(__dirname, "..");
 const NOTION_API = "https://api.notion.com/v1";
 const NOTION_VERSION = "2022-06-28";
 const BIOWATCH_ROOT_PAGE_ID = "31150bea-018d-800e-843b-f3403306af0e";
+const DOC_DATABASE_ID = "2ed50bea-018d-80dc-82e6-fdaf63413233";
+const DOC_TOKEN_ENV = "NOTION_TOKEN_DOC";
 
 function loadDotenv(path) {
   let raw;
@@ -51,13 +57,13 @@ function loadDotenv(path) {
 
 loadDotenv(resolve(REPO_ROOT, ".env"));
 
-function headers() {
-  const token = process.env.NOTION_TOKEN;
+function headers(tokenEnv = "NOTION_TOKEN") {
+  const token = process.env[tokenEnv];
   if (!token) {
     throw new Error(
-      "NOTION_TOKEN missing. Add `NOTION_TOKEN=secret_...` to the project's " +
+      `${tokenEnv} missing. Add \`${tokenEnv}=secret_...\` to the project's ` +
         ".env (create a Notion integration at https://www.notion.so/my-integrations, " +
-        "then share the BioWatch root page with it).",
+        "then share the relevant BioWatch page/database with it).",
     );
   }
   return {
@@ -89,8 +95,8 @@ function richText(parts) {
   return (parts ?? []).map((p) => p.plain_text ?? "").join("");
 }
 
-async function notionFetch(method, url, body) {
-  const init = { method, headers: headers() };
+async function notionFetch(method, url, body, tokenEnv = "NOTION_TOKEN") {
+  const init = { method, headers: headers(tokenEnv) };
   if (method !== "GET" && body !== undefined) {
     init.body = JSON.stringify(body);
   }
@@ -101,10 +107,11 @@ async function notionFetch(method, url, body) {
     err.status = r.status;
     throw err;
   }
+  if (r.status === 204) return null;
   return r.json();
 }
 
-async function paginate(method, url, body) {
+async function paginate(method, url, body, tokenEnv = "NOTION_TOKEN") {
   const results = [];
   let cursor = null;
   while (true) {
@@ -112,11 +119,11 @@ async function paginate(method, url, body) {
     if (method === "GET") {
       const params = new URLSearchParams({ page_size: "100" });
       if (cursor) params.set("start_cursor", cursor);
-      data = await notionFetch("GET", `${url}?${params.toString()}`);
+      data = await notionFetch("GET", `${url}?${params.toString()}`, undefined, tokenEnv);
     } else {
       const payload = { page_size: 100, ...(body ?? {}) };
       if (cursor) payload.start_cursor = cursor;
-      data = await notionFetch(method, url, payload);
+      data = await notionFetch(method, url, payload, tokenEnv);
     }
     results.push(...(data.results ?? []));
     if (!data.has_more) return results;
@@ -240,6 +247,103 @@ async function renderBlocks(blockId, indent, maxDepth) {
 }
 
 // ---------------------------------------------------------------------------
+// Doc writing (Documentation Technique database)
+// ---------------------------------------------------------------------------
+
+function rt(content) {
+  // Notion rich_text array, split into <=2000 char chunks (API limit).
+  const chunks = [];
+  for (let i = 0; i < content.length; i += 2000) chunks.push(content.slice(i, i + 2000));
+  if (chunks.length === 0) chunks.push("");
+  return chunks.map((c) => ({ type: "text", text: { content: c } }));
+}
+
+function heading(text) {
+  return { object: "block", type: "heading_1", heading_1: { rich_text: rt(text) } };
+}
+
+function paragraphBlock(text) {
+  return { object: "block", type: "paragraph", paragraph: { rich_text: rt(text) } };
+}
+
+function codeBlock(text, language = "typescript") {
+  return { object: "block", type: "code", code: { rich_text: rt(text), language } };
+}
+
+function callout(text, emoji = "💡") {
+  return {
+    object: "block",
+    type: "callout",
+    callout: { rich_text: rt(text), icon: { type: "emoji", emoji } },
+  };
+}
+
+function buildDocBlocks(resume, structure, workflow, requirements) {
+  // Blocks matching the BioWatch feature-doc template.
+  const blocks = [
+    heading("Résumé (2 phrases)"),
+    paragraphBlock(resume),
+    heading("Structure"),
+    codeBlock(structure, "typescript"),
+    heading("Exemple / workflow"),
+    callout(workflow),
+  ];
+  if (requirements && requirements.trim()) {
+    blocks.push(heading("Requirements (optionnel)"));
+    blocks.push(callout(requirements));
+  }
+  return blocks;
+}
+
+async function findDocPage(title) {
+  // Return the page id of a doc whose title exactly matches, else null.
+  const data = await notionFetch(
+    "POST",
+    `${NOTION_API}/databases/${DOC_DATABASE_ID}/query`,
+    { filter: { property: "Name", title: { equals: title } }, page_size: 1 },
+    DOC_TOKEN_ENV,
+  );
+  const results = data.results ?? [];
+  return results.length > 0 ? results[0].id : null;
+}
+
+async function createOrUpdateDoc(title, blocks) {
+  // Create the doc page, or replace the body of an existing same-title page.
+  // Returns { action, pageId } with action in {"created", "updated"}.
+  const pageId = await findDocPage(title);
+  if (pageId) {
+    const existing = await paginate(
+      "GET",
+      `${NOTION_API}/blocks/${pageId}/children`,
+      undefined,
+      DOC_TOKEN_ENV,
+    );
+    for (const block of existing) {
+      await notionFetch("DELETE", `${NOTION_API}/blocks/${block.id}`, undefined, DOC_TOKEN_ENV);
+    }
+    await notionFetch(
+      "PATCH",
+      `${NOTION_API}/blocks/${pageId}/children`,
+      { children: blocks },
+      DOC_TOKEN_ENV,
+    );
+    return { action: "updated", pageId };
+  }
+
+  const page = await notionFetch(
+    "POST",
+    `${NOTION_API}/pages`,
+    {
+      parent: { database_id: DOC_DATABASE_ID },
+      properties: { Name: { title: [{ text: { content: title } }] } },
+      children: blocks,
+    },
+    DOC_TOKEN_ENV,
+  );
+  return { action: "created", pageId: page.id };
+}
+
+// ---------------------------------------------------------------------------
 // MCP server
 // ---------------------------------------------------------------------------
 
@@ -299,6 +403,51 @@ const TOOLS = [
       required: ["page_id"],
     },
   },
+  {
+    name: "notion_create_doc",
+    description:
+      "Write CONCISE BioWatch feature documentation to the 'Documentation Technique' " +
+      "Notion database. Call this when documenting a feature as part of an MR. " +
+      "The page follows the team template EXACTLY (do not add or reorder sections): " +
+      "Résumé (2 phrases) → Structure (code tree) → Exemple / workflow → Requirements (optional). " +
+      "GOAL: a teammate must grasp the feature in under 2 minutes — no long essays, " +
+      "keep each section tight. If a doc with the same `title` already exists, its body is " +
+      "REPLACED (idempotent per feature); otherwise a new page is created. " +
+      "Choose a clear, self-explanatory `title` (the feature name) so docs are easy to find in the DB.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        title: {
+          type: "string",
+          description:
+            "Feature name — the page title. Clear and recognizable (e.g. 'Sélecteur de zone H3'). Reused as the update key.",
+        },
+        resume: {
+          type: "string",
+          description: "Summary in AT MOST 2 sentences: what the feature does and why.",
+        },
+        structure: {
+          type: "string",
+          description:
+            "File/folder tree of the feature, rendered in a code block. " +
+            "Annotate key files with short inline comments, e.g.:\n" +
+            "folder/\n-- file1.tsx\n-- file2.ts  # store\n-- file3.ts  # call api",
+        },
+        workflow: {
+          type: "string",
+          description:
+            "A short concrete example or end-to-end workflow of the code. " +
+            "E.g. 'L'utilisateur sélectionne une zone sur la carte, le store map déclenche un appel à territoryService…'.",
+        },
+        requirements: {
+          type: "string",
+          description:
+            "Optional. Business rules / technical constraints (e.g. 'ne jamais afficher un sous-indice absent de l'API').",
+        },
+      },
+      required: ["title", "resume", "structure", "workflow"],
+    },
+  },
 ];
 
 server.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: TOOLS }));
@@ -324,6 +473,21 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
     const body = await renderBlocks(pageId, 0, maxDepth);
     const text = `# ${title}\n\n${body}`.replace(/\s+$/, "") + "\n";
     return { content: [{ type: "text", text }] };
+  }
+
+  if (name === "notion_create_doc") {
+    const title = (args.title || "").trim();
+    const resume = args.resume || "";
+    const structure = args.structure || "";
+    const workflow = args.workflow || "";
+    const requirements = args.requirements;
+    if (!title || !resume || !structure || !workflow) {
+      throw new Error("title, resume, structure and workflow are required for notion_create_doc");
+    }
+    const blocks = buildDocBlocks(resume, structure, workflow, requirements);
+    const { action, pageId } = await createOrUpdateDoc(title, blocks);
+    const url = `https://notion.so/${pageId.replace(/-/g, "")}`;
+    return { content: [{ type: "text", text: `Doc ${action}: ${title}\n${url}` }] };
   }
 
   throw new Error(`Unknown tool: ${name}`);
