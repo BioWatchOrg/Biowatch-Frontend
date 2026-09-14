@@ -28,6 +28,9 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
+      - name: Pin npm to the project's packageManager version
+        run: npm install -g npm@11.6.2
+
       - run: npm ci
 
       - name: eslint
