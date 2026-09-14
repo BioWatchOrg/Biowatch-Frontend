@@ -250,7 +250,7 @@ async function renderBlocks(blockId, indent, maxDepth) {
 // Doc writing (Documentation Technique database)
 // ---------------------------------------------------------------------------
 
-function rt(content) {
+export function rt(content) {
   // Notion rich_text array, split into <=2000 char chunks (API limit).
   const chunks = [];
   for (let i = 0; i < content.length; i += 2000) chunks.push(content.slice(i, i + 2000));
@@ -258,19 +258,19 @@ function rt(content) {
   return chunks.map((c) => ({ type: "text", text: { content: c } }));
 }
 
-function heading(text) {
+export function heading(text) {
   return { object: "block", type: "heading_1", heading_1: { rich_text: rt(text) } };
 }
 
-function paragraphBlock(text) {
+export function paragraphBlock(text) {
   return { object: "block", type: "paragraph", paragraph: { rich_text: rt(text) } };
 }
 
-function codeBlock(text, language = "typescript") {
+export function codeBlock(text, language = "typescript") {
   return { object: "block", type: "code", code: { rich_text: rt(text), language } };
 }
 
-function callout(text, emoji = "💡") {
+export function callout(text, emoji = "💡") {
   return {
     object: "block",
     type: "callout",
@@ -278,7 +278,7 @@ function callout(text, emoji = "💡") {
   };
 }
 
-function buildDocBlocks(resume, structure, workflow, requirements) {
+export function buildDocBlocks(resume, structure, workflow, requirements) {
   // Blocks matching the BioWatch feature-doc template.
   const blocks = [
     heading("Résumé (2 phrases)"),
@@ -312,21 +312,24 @@ async function createOrUpdateDoc(title, blocks) {
   // Returns { action, pageId } with action in {"created", "updated"}.
   const pageId = await findDocPage(title);
   if (pageId) {
+    // Write the new body first, delete the old one only once that succeeds —
+    // if the PATCH fails partway, the page keeps its original content instead
+    // of ending up empty with no rollback.
     const existing = await paginate(
       "GET",
       `${NOTION_API}/blocks/${pageId}/children`,
       undefined,
       DOC_TOKEN_ENV,
     );
-    for (const block of existing) {
-      await notionFetch("DELETE", `${NOTION_API}/blocks/${block.id}`, undefined, DOC_TOKEN_ENV);
-    }
     await notionFetch(
       "PATCH",
       `${NOTION_API}/blocks/${pageId}/children`,
       { children: blocks },
       DOC_TOKEN_ENV,
     );
+    for (const block of existing) {
+      await notionFetch("DELETE", `${NOTION_API}/blocks/${block.id}`, undefined, DOC_TOKEN_ENV);
+    }
     return { action: "updated", pageId };
   }
 
@@ -493,5 +496,9 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
   throw new Error(`Unknown tool: ${name}`);
 });
 
-const transport = new StdioServerTransport();
-await server.connect(transport);
+// Only start the stdio server when this file is run directly (as the MCP
+// entrypoint) — not when it's imported, e.g. by the test file.
+if (import.meta.url === `file://${process.argv[1]}`) {
+  const transport = new StdioServerTransport();
+  await server.connect(transport);
+}
