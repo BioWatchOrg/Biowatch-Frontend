@@ -1,0 +1,41 @@
+name: Claude PR Review
+on:
+  pull_request:
+    types: [labeled]
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  id-token: write
+
+jobs:
+  review:
+    environment: merge-review
+    # Manual trigger only: apply the `run-review` label to run this on the PR's latest
+    # commit. New commits are NOT auto-reviewed — remove and reapply the label to rerun.
+    if: github.event.label.name == 'run-review'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      # claude-code-action@v1 only accepts an inline `prompt`, not a file path —
+      # load reviewer-prompt.md here so it stays a single external source of truth.
+      - name: Load reviewer prompt
+        id: reviewer_prompt
+        run: |
+          {
+            echo 'content<<PROMPT_EOF'
+            cat .github/claude/reviewer-prompt.md
+            echo 'PROMPT_EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: ${{ steps.reviewer_prompt.outputs.content }}
+          use_sticky_comment: true
+          claude_args: |
+            --allowedTools "Read,Grep,Glob,Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr comment:*),Bash(gh issue view:*)"
+            --disallowedTools "Edit,Write,NotebookEdit"
