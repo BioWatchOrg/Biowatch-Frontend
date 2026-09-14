@@ -11,3 +11,4 @@ Closes #<issue-number>
 - [ ] I tested my changes locally
 - [ ] My code is readable and commented where needed
 - [ ] I linked the correct issue
+- [ ] I apply 'run-review' on the last commit
