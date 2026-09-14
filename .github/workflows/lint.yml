@@ -1,0 +1,40 @@
+name: Lint
+
+on:
+  pull_request:
+    branches-ignore:
+      - 'main'
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'src/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'eslint.config.js'
+      - '.prettierrc.json'
+      - 'tsconfig*.json'
+      - '.github/workflows/lint.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: eslint
+        run: npm run lint
+
+      - name: prettier --check
+        run: npm run format:check
+
+      - name: tsc --noEmit
+        run: npm run typecheck

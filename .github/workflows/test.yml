@@ -1,0 +1,97 @@
+name: Test
+
+on:
+  pull_request:
+    branches-ignore:
+      - 'main'
+    types: [opened, synchronize, reopened]
+    paths:
+      - 'src/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vitest.config.ts'
+      - '.github/workflows/test.yml'
+  push:
+    branches: [dev]
+    paths:
+      - 'src/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vitest.config.ts'
+      - '.github/workflows/test.yml'
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Run tests with coverage
+        run: |
+          npm run test:coverage
+          node -e "console.log(require('./coverage/coverage-summary.json').total.lines.pct)" > coverage-total.txt
+
+      # Publishes today's coverage as tomorrow's baseline. Only on dev — branch
+      # pipelines are the only point that "knows" the coverage of dev HEAD.
+      - name: Publish coverage baseline (dev only)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-baseline
+          path: coverage-total.txt
+          retention-days: 90
+
+      # [HARD] PRs touching src/**/*.{ts,tsx} must strictly increase line coverage
+      # vs the dev baseline — any bump counts. PRs that don't touch src/ (config/docs)
+      # are exempt.
+      - name: Coverage must increase vs dev baseline
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git fetch -q origin "${{ github.event.pull_request.base.ref }}"
+          if ! git diff --name-only "origin/${{ github.event.pull_request.base.ref }}...HEAD" \
+              | grep -qE '^src/.*\.(ts|tsx)$'; then
+            echo "No production source changed - coverage-increase gate not applicable."
+            exit 0
+          fi
+
+          RUN_ID=$(gh run list --repo "${{ github.repository }}" --branch dev \
+            --workflow test.yml --status success --json databaseId --jq '.[0].databaseId')
+          if [ -z "$RUN_ID" ]; then
+            echo "No successful run on dev yet - no baseline - passing (first run)."
+            exit 0
+          fi
+
+          if ! gh run download "$RUN_ID" --repo "${{ github.repository }}" \
+              --name coverage-baseline --dir baseline 2>download.log; then
+            if grep -qi "no artifact" download.log; then
+              echo "No coverage-baseline artifact on the latest successful dev run - passing (first run after this gate was added)."
+              exit 0
+            fi
+            echo "FAIL: could not download coverage baseline - fix the fetch, do not ignore it."
+            cat download.log
+            exit 1
+          fi
+
+          BASE=$(cat baseline/coverage-total.txt)
+          NEW=$(cat coverage-total.txt)
+          [ -n "$NEW" ] || { echo "FAIL: coverage-total.txt is empty - coverage artifact problem, not a coverage issue."; exit 1; }
+          echo "coverage (lines %): baseline=$BASE new=$NEW"
+          node -e "process.exit(Number('$NEW') > Number('$BASE') ? 0 : 1)" || {
+            echo "FAIL: PRs touching src/ must increase line coverage ($BASE% -> $NEW%). Add a test for what you touched."
+            exit 1
+          }
