@@ -1,0 +1,48 @@
+name: Mirror → biowatch/frontend
+on:
+  push:
+    branches:
+      - main
+concurrency:
+  group: mirror-central
+  cancel-in-progress: false
+permissions:
+  contents: read
+jobs:
+  mirror:
+    name: Sync frontend into central repo
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout frontend repo
+        uses: actions/checkout@v4
+      - name: Configure git identity
+        run: |
+          git config --global user.email "ci-mirror@biowatch"
+          git config --global user.name  "BioWatch Mirror Bot"
+      - name: Clone central repo
+        env:
+          MIRROR_TOKEN: ${{ secrets.BIOWATCH_MIRROR_TOKEN }}
+        run: |
+          git clone \
+            -c http.extraheader="AUTHORIZATION: basic $(printf 'x-access-token:%s' "$MIRROR_TOKEN" | base64)" \
+            https://github.com/BioWatchOrg/biowatch.git \
+            /tmp/biowatch-central
+      - name: Copy source files into frontend/
+        run: |
+          mkdir -p /tmp/biowatch-central/frontend
+          rsync -av --delete \
+            --exclude='.git' \
+            ./ /tmp/biowatch-central/frontend/
+      - name: Commit and push to central
+        working-directory: /tmp/biowatch-central
+        run: |
+          git add frontend/
+          if git diff --cached --quiet; then
+            echo "Aucun changement détecté — mirror skippé."
+          else
+            COMMIT_MSG="mirror(frontend): sync from ${{ github.repository }}@${{ github.sha }}"
+            git commit -m "$COMMIT_MSG"
+            # garde-fou contre les runs concurrents
+            git pull --rebase origin main
+            git push origin main
+          fi

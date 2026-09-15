@@ -1,0 +1,13 @@
+{
+  "name": "biowatch-notion-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "BioWatch Notion MCP server (stdio) for Claude Code.",
+  "scripts": {
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4"
+  }
+}
