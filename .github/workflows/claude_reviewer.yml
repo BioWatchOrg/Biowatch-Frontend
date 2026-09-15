@@ -37,5 +37,6 @@ jobs:
           prompt: ${{ steps.reviewer_prompt.outputs.content }}
           use_sticky_comment: true
           claude_args: |
-            --allowedTools "Read,Grep,Glob,Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr comment:*),Bash(gh issue view:*)"
+            --allowedTools "Read,Grep,Glob,Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr comment:*),Bash(gh issue view:*),Bash(cat:*)"
             --disallowedTools "Edit,Write,NotebookEdit"
+          show_full_output: true
