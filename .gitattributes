@@ -1,0 +1,13 @@
+# Fins de ligne LF partout, y compris sur Windows (core.autocrlf=true),
+# pour que `prettier --check` donne le même résultat en local et en CI.
+* text=auto eol=lf
+
+# Binaires
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.webp binary
+*.woff binary
+*.woff2 binary
