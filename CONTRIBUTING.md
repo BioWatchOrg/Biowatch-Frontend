@@ -16,8 +16,14 @@
 
 - Playwright browser (once): `npx playwright install chromium`.
 - Line endings are LF everywhere (enforced by `.gitattributes`). If your checkout predates it
-  and `npm run format:check` fails on files you did not touch, refresh your working copy:
-  `git rm -r --cached -q . && git reset --hard` (commit or stash your work first).
+  and `npm run format:check` fails on files you did not touch, refresh your working copy
+  once. Commit or stash your work first, then run the two commands one after the other
+  (works in PowerShell, cmd and bash):
+
+  ```bash
+  git rm -r --cached -q .
+  git reset --hard HEAD
+  ```
 
 ## 📋 Picking a Ticket
 
