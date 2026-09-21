@@ -7,5 +7,5 @@
     "noEmit": true,
     "types": ["node"]
   },
-  "include": ["vite.config.ts", "eslint.config.js"]
+  "include": ["vite.config.ts", "eslint.config.js", "e2e/**/*.ts"]
 }
