@@ -405,6 +405,54 @@ npm run build
 
 ---
 
+## 🧪 Tests
+
+### Unitaires / Unit (Vitest)
+
+```bash
+npm run test            # mode watch
+npm run test:coverage   # une passe avec couverture / single run with coverage
+```
+
+### End-to-end (Playwright)
+
+Première installation du navigateur / First-time browser install:
+
+```bash
+npx playwright install chromium
+```
+
+```bash
+# Lance les tests headless (démarre `npm run dev` automatiquement)
+# Run headless tests (starts `npm run dev` automatically)
+npm run test:e2e
+
+# Mode interactif pour écrire ou débugger un test / Interactive mode
+npm run test:e2e:ui
+
+# Ouvre le dernier rapport HTML (traces, screenshots) / Open last HTML report
+npm run test:e2e:report
+```
+
+Variables optionnelles / Optional variables:
+
+| Variable             | Effet / Effect                                                                   |
+| -------------------- | -------------------------------------------------------------------------------- |
+| `E2E_BASE_URL`       | Cible un environnement déjà déployé, sans serveur local / Target a deployed env  |
+| `E2E_ALL_BROWSERS=1` | Ajoute Firefox et WebKit (`npx playwright install` requis) / Adds Firefox+WebKit |
+| `CI=1`               | Teste le build de production via `vite preview`, comme en CI / Same as CI        |
+
+**Ajouter un test / Adding a test**
+
+- Un fichier par parcours dans `e2e/tests/` : `auth.spec.ts`, `dashboard.spec.ts`…
+- Helpers partagés (connexion, données) dans `e2e/fixtures/`.
+- Sélecteurs accessibles uniquement : `getByRole`, `getByLabel`, `getByText`. Pas de classes CSS.
+- En cas d'échec, trace, screenshot et vidéo sont dans `test-results/`. Ouvrir une trace : `npx playwright show-trace <fichier>.zip`.
+
+En CI, le workflow `e2e.yml` lance les smoke tests sur chaque PR vers `dev` et publie le rapport en artefact.
+
+---
+
 ## 📝 Variables d'Environnement / Environment Variables
 
 ```env
