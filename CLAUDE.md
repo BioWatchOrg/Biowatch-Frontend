@@ -72,7 +72,8 @@ Si une proposition est fragile, surdimensionnée, ou contredit l'architecture : 
 
 **En place dans le repo** :
 
-- **Node 20+** (recommandé : 22 LTS), gestionnaire **npm** (version figée dans `packageManager`).
+- **Node 20+** (recommandé : 22 LTS), gestionnaire **npm 11.6.2** (figé dans `packageManager`). Toujours installer via `npx -y npm@11.6.2 install …` : un autre npm régénère un lockfile qui casse `npm ci` en CI.
+- Fins de ligne **LF** imposées par `.gitattributes`.
 - **React 19** + **React Router 6** + **Vite** + **TypeScript** (strict).
 - **CSS global écrit à la main** dans `src/index.css` (direction visuelle glass, classes sémantiques par feature : `auth-*`, `lp-*`…).
 - **Vitest** + Testing Library (unit) + **Playwright** (e2e, dossier `e2e/`).
@@ -227,7 +228,7 @@ Organisation horizontale : responsabilités partagées, montée en compétence c
 - Commits au format `<type>: description`. Types autorisés : `feat`, `fix`, `perf`, `refactor`, `test`, `docs`, `style`, `ci`, `build`, `chore`.
 
 **Checks CI obligatoires avant merge** (`.github/workflows/`) :
-- `lint.yml` : ESLint + `prettier --check`.
+- `lint.yml` : lockfile généré avec npm 11.6.2, ESLint, `prettier --check`, `tsc --noEmit`.
 - `secrets.yml` : scan de secrets.
 - `test.yml` : Vitest avec coverage. Une PR qui touche `src/**/*.ts(x)` doit **augmenter** la couverture en lignes par rapport à `dev`.
 - `e2e.yml` : smoke tests Playwright sur le build de production (Chromium headless). Rapport et traces publiés en artefacts.
