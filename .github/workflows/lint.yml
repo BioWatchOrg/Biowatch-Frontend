@@ -33,6 +33,16 @@ jobs:
 
       - run: npm ci
 
+      # Un lockfile généré avec une autre version de npm peut perdre les binaires
+      # natifs par plateforme (esbuild, rollup…) et casser `npm ci` ou le build.
+      - name: package-lock.json generated with the pinned npm version
+        run: |
+          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+          git diff --exit-code package-lock.json || {
+            echo "::error file=package-lock.json::package-lock.json was not generated with npm 11.6.2. Run 'npx -y npm@11.6.2 install' and commit the result."
+            exit 1
+          }
+
       - name: eslint
         run: npm run lint
 

@@ -79,16 +79,25 @@ divergence.
 
 ## Stack & structure logicielle
 
-- **Node 20+** (recommandé : 22 LTS), gestionnaire **npm** (ou yarn / pnpm — décision unique à figer).
-- **React 18** + **Vite** + **TypeScript** (strict).
-- **Tailwind CSS** pour le styling.
+**En place dans le repo** :
+
+- **Node 20+** (recommandé : 22 LTS), gestionnaire **npm 11.6.2** (figé dans `packageManager`). Toujours installer via `npx -y npm@11.6.2 install …` : un autre npm régénère un lockfile qui casse `npm ci` en CI.
+- Fins de ligne **LF** imposées par `.gitattributes`.
+- **React 19** + **React Router 6** + **Vite** + **TypeScript** (strict).
+- **CSS global écrit à la main** dans `src/index.css` (direction visuelle glass, classes sémantiques par feature : `auth-*`, `lp-*`…).
+- **Vitest** + Testing Library (unit) + **Playwright** (e2e, dossier `e2e/`).
+- **ESLint** + **Prettier**.
+
+**Cible, pas encore installée** (à ajouter feature par feature, quand un ticket en a besoin) :
+
 - **Zustand** pour l'état global, séparé par domaine (map, user, territory, alert, filter).
 - **Mapbox GL JS** pour la carto. Tout ce qui touche à la carte vit sous `src/map/`.
+- **Axios** pour les appels HTTP (clients API typés, intercepteurs centralisés).
 - **D3.js** pour les visualisations 2D, **Three.js** pour la 3D (optionnel et différé).
 - **GSAP** pour les transitions / animations avancées.
-- **Axios** pour les appels HTTP (clients API typés, intercepteurs centralisés).
-- **Vitest** (unit) + **Playwright** (e2e).
-- **ESLint** + **Prettier** + **SonarQube**.
+- **SonarQube** pour la qualité et la couverture.
+
+**À trancher en équipe** : Tailwind CSS (ticket VS-03 #38) contre le CSS écrit à la main déjà en place. Tant que ce n'est pas décidé, les nouvelles features suivent le CSS existant.
 
 Layout (voir README pour le détail) — règles :
 
@@ -140,6 +149,15 @@ Le score est **contextualisé** (métropole dense vs zone agricole vs forestièr
 - Vitest pour les helpers, formatters, transformers, hooks isolés, et la logique des stores.
 - Playwright pour les flux critiques (auth, navigation carto, sélection de zone).
 - Coverage maintenu ou amélioré.
+
+Emplacements :
+- Unit : `src/_tests_/` et `src/features/<domain>/tests/` (`*.test.ts(x)`).
+- E2E : `e2e/tests/*.spec.ts`, helpers partagés dans `e2e/fixtures/`, config `e2e/playwright.config.ts`.
+
+Règles E2E :
+- Sélecteurs par rôle, label ou texte accessible (`getByRole`, `getByLabel`), jamais par classe CSS.
+- Un fichier de spec par parcours (`auth.spec.ts`, `map-interaction.spec.ts`, `dashboard.spec.ts`…).
+- Commandes : `npm run test:e2e` (headless), `npm run test:e2e:ui` (mode interactif), `npm run test:e2e:report` (dernier rapport). Traces, screenshots et vidéos sont conservés en cas d'échec.
 
 **Logs** :
 - Pas de `console.log` en production. Utiliser un logger (ou un wrapper conditionné par `import.meta.env.MODE`).
@@ -211,10 +229,18 @@ Organisation horizontale : responsabilités partagées, montée en compétence c
 
 **Workflow**
 - Sprint de 2 semaines. Réunion sprint chaque lundi (QA avant la réunion). Travail async le reste du temps.
-- Une branche par tâche. Convention : `ticketNumber_Type_short-description` (ex. `42_Feature_user-login`, `17_Fix_broken-navbar`).
-- Branches : `main` (prod, PR depuis `development` uniquement), `development` (intégration), feature/fix (travail quotidien).
-- Merge uniquement via PR, **≥ 2 reviews**. PR vers `development`, puis `main` après QA.
-- Commits au format `<type>: description`. Types autorisés : `feat`, `fix`, `style`, `refactor`, `docs`, `chore`.
+- Tickets suivis sur le board GitHub **BioWatchOrg / Project #1** : on s'assigne le ticket et on le passe en *In progress* avant de commencer.
+- Une branche par tâche. Convention : `<ticket>_<TYPE>_short-description` (ex. `49_FEATURE_landing-page`, `35_CHORE_migrate-react-to-v19`, `17_FIX_broken-navbar`).
+- Branches : `main` (prod, PR depuis `dev` uniquement), `dev` (intégration), feature/fix (travail quotidien, créées depuis `dev`).
+- Merge uniquement via PR, **≥ 1 review humaine**. PR vers `dev`, puis `main` après QA.
+- Reviewer automatique : poser le label `run-review` sur la PR (consultatif, à relancer après de nouveaux commits).
+- Commits au format `<type>: description`. Types autorisés : `feat`, `fix`, `perf`, `refactor`, `test`, `docs`, `style`, `ci`, `build`, `chore`.
+
+**Checks CI obligatoires avant merge** (`.github/workflows/`) :
+- `lint.yml` : lockfile généré avec npm 11.6.2, ESLint, `prettier --check`, `tsc --noEmit`.
+- `secrets.yml` : scan de secrets.
+- `test.yml` : Vitest avec coverage. Une PR qui touche `src/**/*.ts(x)` doit **augmenter** la couverture en lignes par rapport à `dev`.
+- `e2e.yml` : smoke tests Playwright sur le build de production (Chromium headless). Rapport et traces publiés en artefacts.
 
 ## Comment raisonner avant de proposer
 
