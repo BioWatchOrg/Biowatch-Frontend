@@ -60,6 +60,15 @@ Si une proposition est fragile, surdimensionnée, ou contredit l'architecture : 
 
 **Règle forte** : le frontend ne recalcule pas, ne réimplémente pas, et ne contourne pas l'API.
 
+### Décisions d'architecture
+
+`docs/architecture-decisions.md` trace les choix d'architecture non triviaux avec leur
+raisonnement (ex. Firebase managé vs auto-hébergé, accès Firestore direct depuis le frontend).
+Consulter ce fichier avant de rouvrir un débat déjà tranché — une décision n'est à reconsidérer
+que si son contexte a changé (voir la section "Remise en cause" de chaque entrée). Ce fichier est
+une copie miroir de `Biowatch-BackEnd/docs/architecture-decisions.md`, qui fait foi en cas de
+divergence.
+
 ## Infra VPS (rappel)
 
 - **VPS 1** sert le frontend (build statique via Nginx), expose l'API via reverse proxy, héberge la DB.
