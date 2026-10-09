@@ -20,13 +20,28 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Record start time
+        id: started
+        run: echo "ts=$(date -u +%s)" >> "$GITHUB_OUTPUT"
+
       # claude-code-action@v1 only accepts an inline `prompt`, not a file path —
       # load reviewer-prompt.md here so it stays a single external source of truth.
+      # The PR number is prepended: without it the reviewer cannot tell which PR it
+      # is on (the CI checkout is detached, so a bare `gh pr view` fails) and it
+      # burns its turns guessing instead of reviewing.
       - name: Load reviewer prompt
         id: reviewer_prompt
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
         run: |
           {
             echo 'content<<PROMPT_EOF'
+            echo "Repository: ${REPO}"
+            echo "Pull request under review: #${PR_NUMBER}"
+            echo "Always pass both explicitly, e.g. \`gh pr diff ${PR_NUMBER} --repo ${REPO}\`."
+            echo "Post your review with \`gh pr comment ${PR_NUMBER} --repo ${REPO} --body ...\`."
+            echo
             cat .github/claude/reviewer-prompt.md
             echo 'PROMPT_EOF'
           } >> "$GITHUB_OUTPUT"
@@ -40,3 +55,26 @@ jobs:
             --allowedTools "Read,Grep,Glob,Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr comment:*),Bash(gh issue view:*),Bash(cat:*)"
             --disallowedTools "Edit,Write,NotebookEdit"
           show_full_output: true
+
+      # Without this the job goes green even when the reviewer posted nothing,
+      # which reads as "reviewed" on the PR. The comment is the deliverable.
+      - name: The reviewer must have posted its comment
+        if: ${{ !cancelled() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          STARTED_AT: ${{ steps.started.outputs.ts }}
+        run: |
+          LATEST=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments" --paginate \
+            --jq '[.[] | select(.user.type == "Bot")] | max_by(.updated_at) | .updated_at // empty')
+          if [ -z "$LATEST" ]; then
+            echo "::error::The reviewer posted no comment on this PR. Check the step above for a permission denial or an API error."
+            exit 1
+          fi
+          POSTED_AT=$(date -u -d "$LATEST" +%s)
+          if [ "$POSTED_AT" -lt "$STARTED_AT" ]; then
+            echo "::error::The newest bot comment predates this run ($LATEST): the reviewer did not post anything this time."
+            exit 1
+          fi
+          echo "Review comment posted at $LATEST."
