@@ -1,0 +1,143 @@
+/* Styles propres à la carte, isolés du CSS global : ils survivront au refactor UI (#70). */
+
+.map-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 70vh;
+}
+
+.map-canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.map-status {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  color: #f4f7f6;
+  background: rgba(13, 27, 42, 0.86);
+  backdrop-filter: blur(8px);
+}
+
+.map-status-error {
+  background: rgba(146, 42, 30, 0.92);
+}
+
+.map-retry {
+  padding: 0.25rem 0.7rem;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 999px;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  cursor: pointer;
+}
+
+.map-retry:hover,
+.map-retry:focus-visible {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.map-spinner {
+  width: 0.85rem;
+  height: 0.85rem;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: map-spin 0.8s linear infinite;
+}
+
+@keyframes map-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Une animation permanente gêne la lecture pour qui y est sensible. */
+@media (prefers-reduced-motion: reduce) {
+  .map-spinner {
+    animation: none;
+  }
+}
+
+.map-legend {
+  position: absolute;
+  right: 1rem;
+  bottom: 2.2rem;
+  z-index: 2;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.75rem;
+  color: #f4f7f6;
+  background: rgba(13, 27, 42, 0.86);
+  backdrop-filter: blur(8px);
+}
+
+.map-legend-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.map-legend-items {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.82rem;
+}
+
+.map-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.map-legend-swatch {
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 0.25rem;
+}
+
+.map-legend-range {
+  opacity: 0.72;
+}
+
+/* Page hôte de la carte : elle doit occuper la hauteur de la fenêtre pour que
+   le conteneur WebGL ait une taille, sinon MapLibre rend un canvas de 0 pixel. */
+.map-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.map-page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+}
+
+.map-page-header h1 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.map-page > .map-shell {
+  flex: 1;
+}

@@ -11,6 +11,9 @@ function DashboardPage() {
           Vous etes connecte avec une session temporaire frontend. Cette page sera remplacee par le
           veritable tableau de bord des que l'authentification backend sera disponible.
         </p>
+        <Link to="/carte" className="auth-button">
+          Voir la carte
+        </Link>
         <Link
           to="/login"
           className="btn btn-primary auth-button-secondary"
