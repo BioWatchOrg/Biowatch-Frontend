@@ -22,11 +22,21 @@ jobs:
 
       # claude-code-action@v1 only accepts an inline `prompt`, not a file path —
       # load reviewer-prompt.md here so it stays a single external source of truth.
+      # With a custom `prompt`, the action runs in automation mode and does NOT tell Claude which
+      # PR it is on, and the detached merge-commit checkout means bare `gh pr view` can't find it
+      # either. Prepend the PR number so every `gh` call can target it explicitly.
       - name: Load reviewer prompt
         id: reviewer_prompt
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
         run: |
           {
             echo 'content<<PROMPT_EOF'
+            echo "REPO: $REPO"
+            echo "PR NUMBER: $PR_NUMBER"
+            echo "Wherever this prompt says <PR_NUMBER>, use $PR_NUMBER. Always pass it explicitly to gh."
+            echo
             cat .github/claude/reviewer-prompt.md
             echo 'PROMPT_EOF'
           } >> "$GITHUB_OUTPUT"

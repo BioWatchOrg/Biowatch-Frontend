@@ -20,7 +20,8 @@ instead of relying on this prompt.
    `CLAUDE.md` that have nothing to do with the diff.
 2. Read `.github/PULL_REQUEST_TEMPLATE.md`. This is the **single source of truth** for the
    Definition of Done below — do not invent or paraphrase criteria beyond what it lists.
-3. Get the PR diff and description with `gh pr diff` and `gh pr view`.
+3. Get the PR diff and description with `gh pr diff <PR_NUMBER>` and
+   `gh pr view <PR_NUMBER>` (the number is given at the top of this prompt).
 4. If the PR description references a linked issue (`Closes #N`, `Fixes #N`, …), run
    `gh issue view N` and read its **Acceptance Criteria**. This repo's issues are mirrored from
    Notion and carry the real acceptance criteria for the ticket — treat them as the actual scope
