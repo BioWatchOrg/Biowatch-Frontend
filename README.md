@@ -456,11 +456,23 @@ En CI, le workflow `e2e.yml` lance les smoke tests sur chaque PR vers `dev` et p
 ## 📝 Variables d'Environnement / Environment Variables
 
 ```env
-VITE_MAPBOX_ACCESS_TOKEN=your_mapbox_token
-VITE_API_BASE_URL=your_api_url
-VITE_SATELLITE_API_KEY=your_satellite_api_key
-VITE_ENV=development
+# Optionnel : fond de carte MapLibre. Par defaut CARTO Positron, aucun jeton requis.
+# Optional: MapLibre basemap. Defaults to CARTO Positron, no token needed.
+VITE_MAP_STYLE_URL=
 ```
+
+### 🗺️ Carte / Map
+
+La carte utilise **MapLibre GL** (fork libre de Mapbox GL) : pas de jeton, pas de facturation.
+Tout le code cartographique vit sous `src/map/` et la route `/carte` est chargee en differe,
+car MapLibre pese a lui seul plus que le reste du bundle.
+
+The map uses **MapLibre GL** (open fork of Mapbox GL): no token, no billing. All map code lives
+under `src/map/` and the `/carte` route is lazy-loaded, as MapLibre outweighs the rest of the bundle.
+
+> Les cellules affichees proviennent pour l'instant d'une grille fictive (`src/map/data/`),
+> `apps/api` n'exposant pas encore d'endpoint. Le basculement vers l'API se fait dans
+> `src/map/data/zonesSource.ts`, et nulle part ailleurs.
 
 ---
 
