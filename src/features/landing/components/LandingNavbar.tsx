@@ -15,7 +15,7 @@ function LandingNavbar() {
           <a className="lp-nav-link" href="#features">
             Fonctionnalites
           </a>
-          <Link className="lp-nav-cta" to="/login">
+          <Link className="btn btn-primary" to="/login">
             Se connecter
           </Link>
         </div>

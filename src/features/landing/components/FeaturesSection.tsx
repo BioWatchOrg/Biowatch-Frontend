@@ -17,7 +17,7 @@ const FEATURES: readonly Feature[] = [
     title: 'Donnees satellites',
     description:
       'Indices NDVI, humidite des sols et artificialisation issus des donnees Sentinel-2 et Sentinel-1, mis a jour toutes les 48 heures.',
-    accent: '#a7f3d0',
+    accent: '#00978d',
   },
   {
     id: 'biodiversity',
@@ -25,7 +25,7 @@ const FEATURES: readonly Feature[] = [
     title: 'Biodiversite',
     description:
       "Suivi des especes protegees et des habitats naturels a partir d'occurrences GBIF et de modeles de distribution d'especes.",
-    accent: '#7dd3fc',
+    accent: '#a85d00',
   },
   {
     id: 'anomaly',
@@ -33,7 +33,7 @@ const FEATURES: readonly Feature[] = [
     title: "Detection d'anomalies",
     description:
       "Algorithmes d'IA qui detectent automatiquement les deviations significatives : deforestation, secheresse, fragmentation.",
-    accent: '#fca5a5',
+    accent: '#b3261e',
   },
 ];
 

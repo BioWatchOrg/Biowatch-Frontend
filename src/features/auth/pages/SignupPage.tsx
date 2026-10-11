@@ -84,7 +84,7 @@ function SignupPage() {
           </p>
         ) : null}
 
-        <button type="submit" className="auth-button" disabled={isLoading}>
+        <button type="submit" className="btn btn-primary btn-block" disabled={isLoading}>
           {isLoading ? getAuthMessage('loadingSignup') : getAuthMessage('actionSignup')}
         </button>
       </form>

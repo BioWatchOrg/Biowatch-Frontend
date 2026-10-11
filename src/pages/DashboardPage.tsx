@@ -13,7 +13,7 @@ function DashboardPage() {
         </p>
         <Link
           to="/login"
-          className="auth-button auth-button-secondary"
+          className="btn btn-primary auth-button-secondary"
           onClick={() => clearAuthSession()}
         >
           Se deconnecter
