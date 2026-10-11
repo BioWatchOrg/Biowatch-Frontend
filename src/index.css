@@ -291,7 +291,7 @@ form {
 }
 
 .auth-field input::placeholder {
-  color: #7d8aa3;
+  color: var(--color-ink-muted);
 }
 
 .auth-field input:focus-visible {
