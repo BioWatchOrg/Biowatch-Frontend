@@ -4,13 +4,20 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Mirrors the CSS variables in src/index.css, which stay the source of truth.
         brand: {
-          cream: '#eeeae3', // page background (landing, auth forms)
-          navy: '#1c2e6b', // headings, detail-page header, navigation
-          teal: '#2aaa8a', // CTA buttons, Export PDF, active accent
-          orange: '#f5a42a', // Vigilance score, anomaly warnings
+          cream: 'var(--color-bg)', // page background
+          navy: 'var(--color-navy)', // text, primary buttons, detail header
+          teal: 'var(--color-teal)', // accents, icons
+          'teal-strong': 'var(--color-teal-strong)', // CTA fill (AA with white text)
+          orange: 'var(--color-orange)', // Vigilance score, fills only
+          green: 'var(--color-green)',
+          red: 'var(--color-red)',
         },
+        ink: { muted: 'var(--color-ink-muted)' },
       },
+      borderRadius: { card: 'var(--radius-card)', control: 'var(--radius-control)' },
+      boxShadow: { card: 'var(--shadow-card)' },
     },
   },
   plugins: [],

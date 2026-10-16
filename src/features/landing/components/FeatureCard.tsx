@@ -9,7 +9,7 @@ export type FeatureCardProps = {
 
 function FeatureCard({ icon: Icon, title, description, accent }: FeatureCardProps) {
   return (
-    <article className="lp-card">
+    <article className="card lp-card">
       <span className="lp-card-icon" style={{ color: accent, backgroundColor: `${accent}1f` }}>
         <Icon className="lp-card-icon-svg" />
       </span>

@@ -10,8 +10,6 @@ const TRUST_BADGES: readonly string[] = [
 function Hero() {
   return (
     <section className="lp-hero" aria-labelledby="lp-hero-title">
-      <div className="lp-hero-blob lp-hero-blob-1" aria-hidden="true" />
-      <div className="lp-hero-blob lp-hero-blob-2" aria-hidden="true" />
       <div className="lp-container lp-hero-inner">
         <p className="lp-eyebrow">
           <LeafIcon className="lp-eyebrow-icon" />
@@ -25,11 +23,11 @@ function Hero() {
           sur votre territoire. Des decisions eclairees pour les collectivites locales.
         </p>
         <div className="lp-hero-actions">
-          <Link to="/signup" className="lp-btn lp-btn-primary">
+          <Link to="/signup" className="btn btn-cta">
             Commencer gratuitement
-            <ArrowRightIcon className="lp-btn-icon" />
+            <ArrowRightIcon className="btn-icon" />
           </Link>
-          <Link to="/dashboard" className="lp-btn lp-btn-ghost">
+          <Link to="/dashboard" className="btn btn-ghost">
             Voir la demo
           </Link>
         </div>

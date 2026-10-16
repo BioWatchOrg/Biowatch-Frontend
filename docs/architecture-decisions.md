@@ -9,6 +9,9 @@ de vérité, car ces décisions touchent l'architecture globale, pas seulement l
 de divergence entre les deux copies, celle du backend fait foi — mettre celle-ci à jour en
 conséquence.
 
+Exceptions : les entrées marquées « frontend uniquement » (ADR-003) n'existent que dans cette
+copie — elles ne concernent pas le backend.
+
 ---
 
 ## ADR-001 — Frontend → Firestore en direct pour les données utilisateur non sensibles
@@ -114,3 +117,41 @@ corriger ou à confirmer avec l'équipe avant de s'appuyer dessus.
 
 À réévaluer si le projet dépasse le stade POC/MVP pour viser une mise en production commerciale
 avec des exigences de conformité RGPD strictes — pas avant.
+
+---
+
+## ADR-003 — Styles frontend : variables CSS comme source des tokens, Tailwind en complément (frontend uniquement)
+
+**Statut** : actif
+
+**Contexte**
+
+Le repo contenait du CSS global écrit à la main (direction visuelle "glass" sombre) et Tailwind a
+été installé ensuite, sans décision explicite (ticket VS-03). Les maquettes validées par
+l'équipe (landing, détail de zone, dashboard) utilisent une direction claire : fond crème, texte
+et boutons principaux marine, CTA sarcelle, orange pour le score Vigilance, cartes blanches
+arrondies. Il fallait trancher entre réécrire tout en Tailwind, ou garder le CSS existant.
+
+**Décision**
+
+Les design tokens (couleurs, rayons, ombres, focus) sont définis une seule fois comme variables
+CSS dans `src/index.css`. `tailwind.config.js` ne fait que les référencer (`var(--color-*)`) :
+une valeur ne vit jamais à deux endroits. Les primitives partagées (`card`, `btn`, `chip`,
+`score-badge`) sont des classes sémantiques dans `index.css`. Les nouveaux composants peuvent
+utiliser les utilitaires Tailwind pour la mise en page, mais jamais de couleur codée en dur.
+Les anciennes classes ne sont migrées que lorsque l'écran correspondant est touché.
+
+**Pourquoi**
+
+- Aucune réécriture en bloc : le CSS existant reste fonctionnel, le risque de régression reste
+  faible pour une équipe à capacité limitée.
+- Une seule source de vérité pour les couleurs, donc un futur changement de palette est un
+  changement de variables, pas une chasse aux classes.
+- Les tokens sont échantillonnés sur les maquettes ; deux écarts volontaires pour l'accessibilité
+  (contraste AA) : fond de bouton CTA `#007a72` (la sarcelle `#00978d` reste pour icônes et
+  accents) et texte orange `#a85d00` (l'orange `#ff9500` est réservé aux fonds et barres).
+
+**Remise en cause**
+
+À revoir si l'équipe décide de migrer entièrement vers Tailwind (alors les primitives deviendraient
+des composants React) ou si une bibliothèque de composants est adoptée.
