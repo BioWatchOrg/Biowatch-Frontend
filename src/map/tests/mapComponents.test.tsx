@@ -16,7 +16,7 @@ describe('MapStatus', () => {
     render(<MapStatus status="error" error="Zones indisponibles." onRetry={onRetry} />);
 
     expect(screen.getByRole('alert')).toHaveTextContent('Zones indisponibles.');
-    await userEvent.click(screen.getByRole('button', { name: 'Reessayer' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Réessayer' }));
     expect(onRetry).toHaveBeenCalledTimes(1);
   });
 
@@ -31,11 +31,13 @@ describe('ScoreLegend', () => {
     render(<ScoreLegend />);
 
     const legend = screen.getByRole('region', {
-      name: 'Echelle du score de stress ecologique',
+      name: 'Échelle du score de stress écologique',
     });
     expect(legend).toBeInTheDocument();
     expect(screen.getAllByRole('listitem')).toHaveLength(SCORE_STOPS.length);
     expect(screen.getByText(/Faible/)).toBeInTheDocument();
     expect(screen.getByText(/\(80 et plus\)/)).toBeInTheDocument();
+    expect(screen.getByText(/\(40 à 60\)/)).toBeInTheDocument();
+    expect(screen.getByText(/Élevé/)).toBeInTheDocument();
   });
 });

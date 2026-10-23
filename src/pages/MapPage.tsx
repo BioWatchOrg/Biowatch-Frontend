@@ -5,7 +5,7 @@ function MapPage() {
   return (
     <main className="map-page">
       <header className="map-page-header">
-        <h1>Carte du stress ecologique</h1>
+        <h1>Carte du stress écologique</h1>
         <Link to="/dashboard" className="btn btn-ghost">
           Retour au tableau de bord
         </Link>

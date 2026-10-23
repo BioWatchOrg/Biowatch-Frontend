@@ -12,7 +12,7 @@ function MapStatus({ status, error, onRetry }: MapStatusProps) {
     return (
       <p className="map-status map-status-loading" role="status">
         <span className="map-spinner" aria-hidden="true" />
-        Chargement des zones...
+        Chargement des zones…
       </p>
     );
   }
@@ -22,7 +22,7 @@ function MapStatus({ status, error, onRetry }: MapStatusProps) {
       <div className="map-status map-status-error" role="alert">
         <span>{error}</span>
         <button type="button" className="map-retry" onClick={onRetry}>
-          Reessayer
+          Réessayer
         </button>
       </div>
     );

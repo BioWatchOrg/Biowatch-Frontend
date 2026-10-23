@@ -44,7 +44,7 @@ test.beforeEach(async ({ page }) => {
 test('la carte affiche les cellules et sa legende', async ({ page }) => {
   await page.goto('/carte');
 
-  await expect(page.getByRole('heading', { name: 'Carte du stress ecologique' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Carte du stress écologique' })).toBeVisible();
 
   const canvas = page.locator('canvas.maplibregl-canvas');
   await expect(canvas).toBeVisible();
@@ -52,7 +52,7 @@ test('la carte affiche les cellules et sa legende', async ({ page }) => {
   await expect.poll(async () => (await canvas.boundingBox())?.height ?? 0).toBeGreaterThan(300);
 
   await expect(
-    page.getByRole('region', { name: 'Echelle du score de stress ecologique' }),
+    page.getByRole('region', { name: 'Échelle du score de stress écologique' }),
   ).toBeVisible();
 
   // Le chargement des zones se termine : plus d'indicateur, et aucun bandeau d'erreur.

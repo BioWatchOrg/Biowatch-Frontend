@@ -6,12 +6,12 @@ import { SCORE_STOPS, tokenColor } from '../utils/colorScale';
  */
 function ScoreLegend() {
   return (
-    <section className="map-legend" aria-label="Echelle du score de stress ecologique">
+    <section className="map-legend" aria-label="Échelle du score de stress écologique">
       <h2 className="map-legend-title">Score de stress</h2>
       <ul className="map-legend-items">
         {SCORE_STOPS.map((stop, index) => {
           const next = SCORE_STOPS[index + 1];
-          const range = next ? `${stop.from} a ${next.from}` : `${stop.from} et plus`;
+          const range = next ? `${stop.from} à ${next.from}` : `${stop.from} et plus`;
           return (
             <li key={stop.from} className="map-legend-item">
               <span

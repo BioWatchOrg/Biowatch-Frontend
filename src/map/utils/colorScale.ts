@@ -17,9 +17,9 @@ export interface ScoreStop {
 
 export const SCORE_STOPS: readonly ScoreStop[] = [
   { from: 0, token: '--score-low', label: 'Faible' },
-  { from: 40, token: '--score-moderate', label: 'Modere' },
+  { from: 40, token: '--score-moderate', label: 'Modéré' },
   { from: 60, token: '--score-vigilance', label: 'Vigilance' },
-  { from: 80, token: '--score-high', label: 'Eleve' },
+  { from: 80, token: '--score-high', label: 'Élevé' },
 ];
 
 /** Contour des cellules : la couleur de texte de l'application. */
