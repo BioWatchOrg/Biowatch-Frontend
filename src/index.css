@@ -24,6 +24,12 @@
   --chip-critical-bg: #fee2e2;
   --chip-critical-ink: #991b1b;
 
+  /* Stress score scale on the map (cell fills, legend swatches), read by src/map/utils/colorScale.ts */
+  --score-low: var(--color-green);
+  --score-moderate: #9ccb5a;
+  --score-vigilance: var(--color-orange);
+  --score-high: var(--color-red);
+
   --radius-card: 1.25rem;
   --radius-control: 0.85rem;
   --shadow-card: 0 10px 30px rgba(28, 66, 134, 0.08);

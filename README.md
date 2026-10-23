@@ -456,11 +456,28 @@ En CI, le workflow `e2e.yml` lance les smoke tests sur chaque PR vers `dev` et p
 ## 📝 Variables d'Environnement / Environment Variables
 
 ```env
-VITE_MAPBOX_ACCESS_TOKEN=your_mapbox_token
-VITE_API_BASE_URL=your_api_url
-VITE_SATELLITE_API_KEY=your_satellite_api_key
-VITE_ENV=development
+# Optionnel : fond de carte MapLibre. Par defaut CARTO Positron, aucun jeton requis.
+# Optional: MapLibre basemap. Defaults to CARTO Positron, no token needed.
+VITE_MAP_STYLE_URL=
 ```
+
+### 🗺️ Carte / Map
+
+La carte utilise **MapLibre GL** (fork libre de Mapbox GL) : pas de jeton, pas de facturation.
+Tout le code cartographique vit sous `src/map/` et la route `/carte` est chargee en differe,
+car MapLibre pese a lui seul plus que le reste du bundle.
+
+The map uses **MapLibre GL** (open fork of Mapbox GL): no token, no billing. All map code lives
+under `src/map/` and the `/carte` route is lazy-loaded, as MapLibre outweighs the rest of the bundle.
+
+> Les cellules viennent de `GET /v1/zones/at-risk` via la couche `src/api`. Tant que
+> `apps/api` n'expose aucun endpoint, lancer le front avec `VITE_USE_MOCKS=true` (voir
+> `.env.example`) pour afficher les zones simulees autour de Paris. Les couleurs du score sont
+> les variables `--score-*` de `src/index.css`.
+>
+> Cells come from `GET /v1/zones/at-risk` through `src/api`. Until `apps/api` serves it, run
+> the app with `VITE_USE_MOCKS=true` to display the simulated zones around Paris. Score colors
+> are the `--score-*` variables in `src/index.css`.
 
 ---
 
