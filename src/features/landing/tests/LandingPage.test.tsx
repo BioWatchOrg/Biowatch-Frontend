@@ -1,5 +1,7 @@
 import { render, screen, within } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import userEvent from '@testing-library/user-event';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { useUserStore } from '../../../store/userStore';
 import LandingPage from '../pages/LandingPage';
 
 function renderLanding(): void {
@@ -11,6 +13,8 @@ function renderLanding(): void {
 }
 
 describe('LandingPage', () => {
+  beforeEach(() => useUserStore.setState({ isAuthenticated: false }));
+
   it('renders a single top-level h1 with the hero headline', () => {
     renderLanding();
 
@@ -32,25 +36,29 @@ describe('LandingPage', () => {
     expect(screen.getByRole('region', { name: /Chiffres cles/i })).toBeInTheDocument();
   });
 
-  it('points the primary CTAs to signup, demo and login', () => {
+  it.each([['Commencer gratuitement'], ['Voir la demo'], ['Demarrer maintenant']])(
+    'signs in and opens the dashboard from "%s"',
+    async (name) => {
+      render(
+        <MemoryRouter>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/dashboard" element={<p>dashboard page</p>} />
+          </Routes>
+        </MemoryRouter>,
+      );
+
+      await userEvent.click(screen.getByRole('button', { name: new RegExp(name, 'i') }));
+
+      expect(useUserStore.getState().isAuthenticated).toBe(true);
+      expect(screen.getByText('dashboard page')).toBeInTheDocument();
+    },
+  );
+
+  it('exposes the "Se connecter" button in the navbar and the CTA section', () => {
     renderLanding();
 
-    expect(screen.getByRole('link', { name: /Commencer gratuitement/i })).toHaveAttribute(
-      'href',
-      '/signup',
-    );
-    expect(screen.getByRole('link', { name: /Voir la demo/i })).toHaveAttribute(
-      'href',
-      '/dashboard',
-    );
-    expect(screen.getByRole('link', { name: /Demarrer maintenant/i })).toHaveAttribute(
-      'href',
-      '/signup',
-    );
-
-    const loginLinks = screen.getAllByRole('link', { name: /Se connecter/i });
-    expect(loginLinks.length).toBeGreaterThan(0);
-    loginLinks.forEach((link) => expect(link).toHaveAttribute('href', '/login'));
+    expect(screen.getAllByRole('button', { name: /Se connecter/i })).toHaveLength(2);
   });
 
   it('renders the three feature cards', () => {
