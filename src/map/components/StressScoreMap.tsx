@@ -1,7 +1,13 @@
 import { useEffect } from 'react';
+import { useMapStore } from '../../store/mapStore';
 import { useMapInstance } from '../hooks/useMapInstance';
+import { useZoneSelection } from '../hooks/useZoneSelection';
 import { useZonesInView } from '../hooks/useZonesInView';
-import { addStressScoreLayer, setStressScoreData } from '../layers/stressScoreLayer';
+import {
+  addStressScoreLayer,
+  setSelectedZone,
+  setStressScoreData,
+} from '../layers/stressScoreLayer';
 import { zonesToFeatureCollection } from '../utils/geojson';
 import MapStatus from './MapStatus';
 import ScoreLegend from './ScoreLegend';
@@ -12,11 +18,13 @@ import '../map.css';
 
 /**
  * Carte principale : fond MapLibre, cellules colorées par score, rechargées à chaque
- * déplacement de la vue.
+ * déplacement de la vue. Un clic sur une cellule la sélectionne dans `useMapStore`.
  */
 function StressScoreMap() {
   const { containerRef, map, styleError } = useMapInstance();
   const { zones, status, error, retry } = useZonesInView(map);
+  const selectedZoneId = useMapStore((state) => state.selectedZoneId);
+  useZoneSelection(map);
 
   useEffect(() => {
     if (!map) return;
@@ -27,6 +35,11 @@ function StressScoreMap() {
     if (!map) return;
     setStressScoreData(map, zonesToFeatureCollection(zones));
   }, [map, zones]);
+
+  useEffect(() => {
+    if (!map) return;
+    setSelectedZone(map, selectedZoneId);
+  }, [map, selectedZoneId]);
 
   return (
     <div className="map-shell">

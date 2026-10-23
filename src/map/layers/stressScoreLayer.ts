@@ -10,6 +10,14 @@ import { EMPTY_COLLECTION, type ZoneFeatureCollection } from '../utils/geojson';
 export const ZONES_SOURCE_ID = 'stress-zones';
 export const ZONES_FILL_LAYER_ID = 'stress-zones-fill';
 export const ZONES_OUTLINE_LAYER_ID = 'stress-zones-outline';
+export const ZONES_SELECTED_LAYER_ID = 'stress-zones-selected';
+
+/** Filtre MapLibre qui ne garde que la zone sélectionnée — aucune quand `zoneId` est null. */
+export const selectedZoneFilter = (zoneId: string | null): unknown[] => [
+  '==',
+  ['get', 'zone_id'],
+  zoneId ?? '',
+];
 
 /** Ajoute source et couches si elles n'existent pas encore (le style peut être rechargé). */
 export const addStressScoreLayer = (
@@ -43,6 +51,26 @@ export const addStressScoreLayer = (
         'line-opacity': 0.5,
       },
     });
+  }
+
+  if (!map.getLayer(ZONES_SELECTED_LAYER_ID)) {
+    map.addLayer({
+      id: ZONES_SELECTED_LAYER_ID,
+      type: 'line',
+      source: ZONES_SOURCE_ID,
+      filter: selectedZoneFilter(null) as never,
+      paint: {
+        'line-color': resolve(ZONE_OUTLINE_TOKEN),
+        'line-width': 3,
+      },
+    });
+  }
+};
+
+/** Met en évidence la zone sélectionnée (contour épais), ou n'en montre aucune. */
+export const setSelectedZone = (map: MapLibreMap, zoneId: string | null): void => {
+  if (map.getLayer(ZONES_SELECTED_LAYER_ID)) {
+    map.setFilter(ZONES_SELECTED_LAYER_ID, selectedZoneFilter(zoneId) as never);
   }
 };
 
