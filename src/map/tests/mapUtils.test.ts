@@ -37,6 +37,18 @@ describe('boundsToBbox', () => {
   it('borne la latitude aux poles', () => {
     expect(boundsToBbox(bounds(0, -95, 10, 95))).toEqual([0, -90, 10, 90]);
   });
+
+  it('demande toutes les longitudes quand la vue couvre plus que le globe', () => {
+    expect(boundsToBbox(bounds(-250, -60, 230, 70))).toEqual([-180, -60, 180, 70]);
+  });
+
+  it('demande toutes les longitudes quand la vue chevauche l antimeridien', () => {
+    expect(boundsToBbox(bounds(170, -20, 190, 10))).toEqual([-180, -20, 180, 10]);
+  });
+
+  it('garde une vue qui s arrete pile sur l antimeridien', () => {
+    expect(boundsToBbox(bounds(170, -20, 180, 10))).toEqual([170, -20, 180, 10]);
+  });
 });
 
 describe('bboxEquals', () => {
