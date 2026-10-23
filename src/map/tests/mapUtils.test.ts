@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { bboxEquals, bboxToKey, boundsToBbox } from '../utils/bbox';
+import { bboxEquals, boundsToBbox } from '../utils/bbox';
 import {
   resolveCssToken,
   SCORE_STOPS,
@@ -58,10 +58,6 @@ describe('bboxEquals', () => {
     expect(bboxEquals(a, [1, 2, 3, 5])).toBe(false);
     expect(bboxEquals(a, null)).toBe(false);
     expect(bboxEquals(null, null)).toBe(false);
-  });
-
-  it('produit une cle de requete stable', () => {
-    expect(bboxToKey([1, 2, 3, 4])).toBe('1,2,3,4');
   });
 });
 

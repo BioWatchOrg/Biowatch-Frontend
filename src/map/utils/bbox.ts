@@ -40,5 +40,3 @@ export const boundsToBbox = (bounds: BoundsLike): Bbox => {
 
 export const bboxEquals = (a: Bbox | null, b: Bbox | null): boolean =>
   a !== null && b !== null && a.every((value, index) => value === b[index]);
-
-export const bboxToKey = (bbox: Bbox): string => bbox.join(',');

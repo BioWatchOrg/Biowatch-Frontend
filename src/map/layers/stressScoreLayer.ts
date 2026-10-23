@@ -19,7 +19,11 @@ export const selectedZoneFilter = (zoneId: string | null): unknown[] => [
   zoneId ?? '',
 ];
 
-/** Ajoute source et couches si elles n'existent pas encore (le style peut être rechargé). */
+/**
+ * Ajoute source et couches si elles n'existent pas encore : un second appel ne duplique rien.
+ * Appelée une fois, au chargement de la carte. Un `setStyle` à chaud effacerait ces couches ;
+ * le style ne change pas en cours de session aujourd'hui (`VITE_MAP_STYLE_URL` est lu au build).
+ */
 export const addStressScoreLayer = (
   map: MapLibreMap,
   resolve: TokenResolver = resolveCssToken,
