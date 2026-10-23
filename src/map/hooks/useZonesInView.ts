@@ -34,11 +34,15 @@ export const useZonesInView = (map: MapLike | null): ZonesInView => {
   const [status, setStatus] = useState<ZonesStatus>('idle');
   const [error, setError] = useState<string | null>(null);
 
+  /** Vue chargée ou en cours de chargement : sert à ne pas recharger une vue identique. */
   const requestedBbox = useRef<Bbox | null>(null);
+  /** Dernière vue demandée, même en échec : c'est elle que « Réessayer » recharge. */
+  const lastBbox = useRef<Bbox | null>(null);
   const latestRequest = useRef(0);
 
   const load = useCallback(async (bbox: Bbox) => {
     requestedBbox.current = bbox;
+    lastBbox.current = bbox;
     const requestId = latestRequest.current + 1;
     latestRequest.current = requestId;
 
@@ -51,6 +55,8 @@ export const useZonesInView = (map: MapLike | null): ZonesInView => {
       setStatus('ready');
     } catch {
       if (latestRequest.current !== requestId) return;
+      // Une vue en échec ne doit pas être prise pour une vue déjà chargée.
+      requestedBbox.current = null;
       setError(ERROR_MESSAGE);
       setStatus('error');
     }
@@ -81,7 +87,7 @@ export const useZonesInView = (map: MapLike | null): ZonesInView => {
   }, [map, load]);
 
   const retry = useCallback(() => {
-    const bbox = requestedBbox.current;
+    const bbox = lastBbox.current;
     if (bbox) void load(bbox);
   }, [load]);
 

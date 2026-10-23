@@ -113,6 +113,26 @@ describe('useZonesInView', () => {
     expect(fetchZones).toHaveBeenCalledTimes(2);
   });
 
+  it('recharge une vue dont le chargement a echoue quand on y revient', async () => {
+    const fetchZones = vi
+      .spyOn(zonesSource, 'fetchZonesInView')
+      .mockRejectedValueOnce(new Error('boom'))
+      .mockResolvedValueOnce([zone('b')]);
+    const { map } = fakeMap();
+
+    const { result } = renderHook(() => useZonesInView(map));
+    await waitFor(() => expect(result.current.status).toBe('error'));
+
+    // Même vue qu'au départ : sans réinitialisation, l'échec la bloquerait jusqu'au clic sur « Réessayer ».
+    await act(async () => {
+      map.moveTo(2.25);
+      vi.advanceTimersByTime(MOVE_DEBOUNCE_MS);
+    });
+
+    await waitFor(() => expect(result.current.status).toBe('ready'));
+    expect(fetchZones).toHaveBeenCalledTimes(2);
+  });
+
   it('ignore une reponse plus lente que le deplacement suivant', async () => {
     let resolveFirst: (zones: ZoneFeature[]) => void = () => {};
     vi.spyOn(zonesSource, 'fetchZonesInView')
