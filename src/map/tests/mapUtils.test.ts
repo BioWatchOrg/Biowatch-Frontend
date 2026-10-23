@@ -2,7 +2,6 @@ import { describe, expect, it } from 'vitest';
 import { bboxEquals, bboxToKey, boundsToBbox } from '../utils/bbox';
 import { colorForScore, SCORE_STOPS, scoreColorExpression } from '../utils/colorScale';
 import { zonesToFeatureCollection } from '../utils/geojson';
-import { buildFixtureZones } from '../data/fixtureZones';
 import type { Bbox, ZoneFeature } from '../data/types';
 
 const bounds = (west: number, south: number, east: number, north: number) => ({
@@ -103,37 +102,5 @@ describe('zonesToFeatureCollection', () => {
   it('ignore une zone sans geometrie plutot que de la placer au hasard', () => {
     const { features } = zonesToFeatureCollection([zone('a', false), zone('b', true)]);
     expect(features.map((f) => f.id)).toEqual(['b']);
-  });
-});
-
-describe('buildFixtureZones', () => {
-  const PARIS: Bbox = [2.25, 48.81, 2.42, 48.9];
-
-  it('couvre la vue demandee', () => {
-    expect(buildFixtureZones(PARIS).length).toBeGreaterThan(50);
-  });
-
-  it('redonne exactement les memes zones pour la meme vue', () => {
-    expect(buildFixtureZones(PARIS)).toEqual(buildFixtureZones(PARIS));
-  });
-
-  it('produit des identifiants au format d un index H3 (15 caracteres hex)', () => {
-    for (const zone of buildFixtureZones(PARIS).slice(0, 20)) {
-      expect(zone.zone_id).toMatch(/^[0-9a-f]{15}$/);
-    }
-  });
-
-  it('produit des hexagones fermes et des scores dans l echelle', () => {
-    for (const zone of buildFixtureZones(PARIS).slice(0, 20)) {
-      const ring = zone.geometry?.coordinates[0] ?? [];
-      expect(ring).toHaveLength(7);
-      expect(ring[0]).toEqual(ring[6]);
-      expect(zone.score_global).toBeGreaterThanOrEqual(0);
-      expect(zone.score_global).toBeLessThanOrEqual(100);
-    }
-  });
-
-  it('ne produit rien pour une vue vide ou inversee', () => {
-    expect(buildFixtureZones([2.4, 48.9, 2.25, 48.81])).toEqual([]);
   });
 });

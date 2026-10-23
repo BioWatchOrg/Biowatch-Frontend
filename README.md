@@ -470,9 +470,14 @@ car MapLibre pese a lui seul plus que le reste du bundle.
 The map uses **MapLibre GL** (open fork of Mapbox GL): no token, no billing. All map code lives
 under `src/map/` and the `/carte` route is lazy-loaded, as MapLibre outweighs the rest of the bundle.
 
-> Les cellules affichees proviennent pour l'instant d'une grille fictive (`src/map/data/`),
-> `apps/api` n'exposant pas encore d'endpoint. Le basculement vers l'API se fait dans
-> `src/map/data/zonesSource.ts`, et nulle part ailleurs.
+> Les cellules viennent de `GET /v1/zones/at-risk` via la couche `src/api`. Tant que
+> `apps/api` n'expose aucun endpoint, lancer le front avec `VITE_USE_MOCKS=true` (voir
+> `.env.example`) pour afficher les zones simulees autour de Paris. Les couleurs du score sont
+> les variables `--score-*` de `src/index.css`.
+>
+> Cells come from `GET /v1/zones/at-risk` through `src/api`. Until `apps/api` serves it, run
+> the app with `VITE_USE_MOCKS=true` to display the simulated zones around Paris. Score colors
+> are the `--score-*` variables in `src/index.css`.
 
 ---
 

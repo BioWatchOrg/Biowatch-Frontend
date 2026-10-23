@@ -37,7 +37,7 @@ const buildZone = (col: number, row: number): MockZone => {
   const lng = ORIGIN.lng + col * RADIUS_LNG * 1.75 + (row % 2) * RADIUS_LNG * 0.875;
   const lat = ORIGIN.lat + row * RADIUS_LAT * 1.5;
   return {
-    zone_id: `881f1d4a${seed.toString(16).padStart(4, '0')}fffff`.slice(0, 16),
+    zone_id: `881f1d4a${seed.toString(16).padStart(4, '0')}fffff`.slice(0, 15),
     score_global: round1(20 + pseudo(seed) * 75),
     sub_scores: {
       human_pressure: round1(pseudo(seed + 1) * 100),
