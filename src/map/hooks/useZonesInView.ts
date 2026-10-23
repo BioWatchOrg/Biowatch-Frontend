@@ -20,7 +20,7 @@ export interface ZonesInView {
   retry: () => void;
 }
 
-export const MOVE_DEBOUNCE_MS = 300;
+export const MOVE_DEBOUNCE_MS = 400;
 
 const ERROR_MESSAGE = 'Impossible de charger les zones pour cette vue.';
 
