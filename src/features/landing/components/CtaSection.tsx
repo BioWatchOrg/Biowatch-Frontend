@@ -1,7 +1,9 @@
-import { Link } from 'react-router-dom';
+import { useSignInToDashboard } from '../../auth/hooks/useSignInToDashboard';
 import { ArrowRightIcon } from './icons';
 
 function CtaSection() {
+  const signInToDashboard = useSignInToDashboard();
+
   return (
     <section className="lp-section lp-cta" aria-labelledby="lp-cta-title">
       <div className="lp-container">
@@ -14,13 +16,13 @@ function CtaSection() {
             Deployez BioWatch en moins d'une semaine. Acces complet, sans engagement.
           </p>
           <div className="lp-cta-actions">
-            <Link to="/signup" className="btn btn-cta">
+            <button type="button" className="btn btn-cta" onClick={signInToDashboard}>
               Demarrer maintenant
               <ArrowRightIcon className="btn-icon" />
-            </Link>
-            <Link to="/login" className="btn btn-ghost-inverse">
+            </button>
+            <button type="button" className="btn btn-ghost-inverse" onClick={signInToDashboard}>
               Se connecter
-            </Link>
+            </button>
           </div>
         </div>
       </div>
