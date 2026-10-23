@@ -57,9 +57,16 @@ export const useMapInstance = (): MapInstance => {
     const resizeObserver = new ResizeObserver(() => instance.resize());
     resizeObserver.observe(containerRef.current);
 
+    // Seule une erreur AVANT le premier chargement veut dire « pas de fond de carte » (style
+    // introuvable, réseau coupé). Après, une tuile ou une icône manquante ne casse pas la
+    // carte : on retire notre écouteur et MapLibre reprend son propre signalement en console.
     const handleError = () => setStyleError('Le fond de carte est indisponible.');
     instance.on('error', handleError);
-    instance.once('load', () => setMap(instance));
+    instance.once('load', () => {
+      instance.off('error', handleError);
+      setStyleError(null);
+      setMap(instance);
+    });
 
     return () => {
       resizeObserver.disconnect();
