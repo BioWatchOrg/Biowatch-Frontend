@@ -1,4 +1,4 @@
-import { SCORE_STOPS } from '../utils/colorScale';
+import { SCORE_STOPS, tokenColor } from '../utils/colorScale';
 
 /**
  * Légende de l'échelle de score. Elle rend la carte lisible sans interprétation des couleurs,
@@ -16,7 +16,7 @@ function ScoreLegend() {
             <li key={stop.from} className="map-legend-item">
               <span
                 className="map-legend-swatch"
-                style={{ backgroundColor: stop.color }}
+                style={{ backgroundColor: tokenColor(stop.token) }}
                 aria-hidden="true"
               />
               <span>

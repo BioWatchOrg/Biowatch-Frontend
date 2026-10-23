@@ -11,16 +11,14 @@ function DashboardPage() {
           Vous etes connecte avec une session temporaire frontend. Cette page sera remplacee par le
           veritable tableau de bord des que l'authentification backend sera disponible.
         </p>
-        <Link to="/carte" className="auth-button">
-          Voir la carte
-        </Link>
-        <Link
-          to="/login"
-          className="btn btn-primary auth-button-secondary"
-          onClick={() => clearAuthSession()}
-        >
-          Se deconnecter
-        </Link>
+        <div className="mt-5 flex flex-wrap gap-3">
+          <Link to="/carte" className="btn btn-cta">
+            Voir la carte
+          </Link>
+          <Link to="/login" className="btn btn-primary" onClick={() => clearAuthSession()}>
+            Se deconnecter
+          </Link>
+        </div>
       </section>
     </main>
   );

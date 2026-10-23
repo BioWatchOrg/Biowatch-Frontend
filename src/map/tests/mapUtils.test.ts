@@ -1,6 +1,12 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import { bboxEquals, bboxToKey, boundsToBbox } from '../utils/bbox';
-import { colorForScore, SCORE_STOPS, scoreColorExpression } from '../utils/colorScale';
+import {
+  resolveCssToken,
+  SCORE_STOPS,
+  scoreColorExpression,
+  stopForScore,
+  tokenColor,
+} from '../utils/colorScale';
 import { zonesToFeatureCollection } from '../utils/geojson';
 import type { Bbox, ZoneFeature } from '../data/types';
 
@@ -47,26 +53,49 @@ describe('bboxEquals', () => {
   });
 });
 
-describe('colorForScore', () => {
-  it('donne la couleur du palier atteint', () => {
-    expect(colorForScore(0)).toBe(SCORE_STOPS[0].color);
-    expect(colorForScore(39.9)).toBe(SCORE_STOPS[0].color);
-    expect(colorForScore(40)).toBe(SCORE_STOPS[1].color);
-    expect(colorForScore(85)).toBe(SCORE_STOPS[3].color);
+describe('stopForScore', () => {
+  it('donne le palier atteint', () => {
+    expect(stopForScore(0)).toBe(SCORE_STOPS[0]);
+    expect(stopForScore(39.9)).toBe(SCORE_STOPS[0]);
+    expect(stopForScore(40)).toBe(SCORE_STOPS[1]);
+    expect(stopForScore(85)).toBe(SCORE_STOPS[3]);
+  });
+});
+
+describe('couleurs du score', () => {
+  afterEach(() => {
+    document.documentElement.removeAttribute('style');
   });
 
   it('annonce a MapLibre les memes paliers que la legende', () => {
-    expect(scoreColorExpression()).toEqual([
+    const resolve = (token: string) => `resolved${token}`;
+    expect(scoreColorExpression(resolve)).toEqual([
       'step',
       ['get', 'score_global'],
-      SCORE_STOPS[0].color,
+      `resolved${SCORE_STOPS[0].token}`,
       SCORE_STOPS[1].from,
-      SCORE_STOPS[1].color,
+      `resolved${SCORE_STOPS[1].token}`,
       SCORE_STOPS[2].from,
-      SCORE_STOPS[2].color,
+      `resolved${SCORE_STOPS[2].token}`,
       SCORE_STOPS[3].from,
-      SCORE_STOPS[3].color,
+      `resolved${SCORE_STOPS[3].token}`,
     ]);
+  });
+
+  it('ne recopie aucune couleur : chaque palier pointe une variable --score-*', () => {
+    for (const stop of SCORE_STOPS) {
+      expect(stop.token).toMatch(/^--score-/);
+    }
+    expect(tokenColor('--score-low')).toBe('var(--score-low)');
+  });
+
+  it('lit la valeur calculee de la variable CSS', () => {
+    document.documentElement.style.setProperty('--score-low', ' #34c759 ');
+    expect(resolveCssToken('--score-low')).toBe('#34c759');
+  });
+
+  it('echoue si la variable est absente plutot que d inventer une couleur', () => {
+    expect(() => resolveCssToken('--score-absent')).toThrowError(/--score-absent/);
   });
 });
 

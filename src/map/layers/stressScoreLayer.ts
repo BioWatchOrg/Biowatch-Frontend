@@ -1,5 +1,10 @@
 import type { Map as MapLibreMap } from 'maplibre-gl';
-import { scoreColorExpression } from '../utils/colorScale';
+import {
+  resolveCssToken,
+  scoreColorExpression,
+  ZONE_OUTLINE_TOKEN,
+  type TokenResolver,
+} from '../utils/colorScale';
 import { EMPTY_COLLECTION, type ZoneFeatureCollection } from '../utils/geojson';
 
 export const ZONES_SOURCE_ID = 'stress-zones';
@@ -7,7 +12,10 @@ export const ZONES_FILL_LAYER_ID = 'stress-zones-fill';
 export const ZONES_OUTLINE_LAYER_ID = 'stress-zones-outline';
 
 /** Ajoute source et couches si elles n'existent pas encore (le style peut être rechargé). */
-export const addStressScoreLayer = (map: MapLibreMap): void => {
+export const addStressScoreLayer = (
+  map: MapLibreMap,
+  resolve: TokenResolver = resolveCssToken,
+): void => {
   if (!map.getSource(ZONES_SOURCE_ID)) {
     map.addSource(ZONES_SOURCE_ID, { type: 'geojson', data: EMPTY_COLLECTION });
   }
@@ -18,7 +26,7 @@ export const addStressScoreLayer = (map: MapLibreMap): void => {
       type: 'fill',
       source: ZONES_SOURCE_ID,
       paint: {
-        'fill-color': scoreColorExpression() as never,
+        'fill-color': scoreColorExpression(resolve) as never,
         'fill-opacity': 0.45,
       },
     });
@@ -30,7 +38,7 @@ export const addStressScoreLayer = (map: MapLibreMap): void => {
       type: 'line',
       source: ZONES_SOURCE_ID,
       paint: {
-        'line-color': '#0d1b2a',
+        'line-color': resolve(ZONE_OUTLINE_TOKEN),
         'line-width': 0.4,
         'line-opacity': 0.5,
       },

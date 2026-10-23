@@ -1,4 +1,4 @@
-/* Styles propres à la carte, isolés du CSS global : ils survivront au refactor UI (#70). */
+/* Styles propres à la carte. Couleurs, rayons et ombres viennent des tokens de src/index.css (ADR-003). */
 
 .map-shell {
   position: relative;
@@ -25,18 +25,21 @@
   padding: 0.55rem 1rem;
   border-radius: 999px;
   font-size: 0.9rem;
-  color: #f4f7f6;
-  background: rgba(13, 27, 42, 0.86);
-  backdrop-filter: blur(8px);
+  color: var(--color-navy);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  box-shadow: var(--shadow-card);
 }
 
 .map-status-error {
-  background: rgba(146, 42, 30, 0.92);
+  color: var(--chip-critical-ink);
+  background: var(--chip-critical-bg);
+  border-color: transparent;
 }
 
 .map-retry {
   padding: 0.25rem 0.7rem;
-  border: 1px solid rgba(255, 255, 255, 0.45);
+  border: 1px solid currentColor;
   border-radius: 999px;
   color: inherit;
   background: transparent;
@@ -44,16 +47,20 @@
   cursor: pointer;
 }
 
-.map-retry:hover,
+.map-retry:hover {
+  background: var(--color-surface);
+}
+
 .map-retry:focus-visible {
-  background: rgba(255, 255, 255, 0.16);
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 .map-spinner {
   width: 0.85rem;
   height: 0.85rem;
-  border: 2px solid rgba(255, 255, 255, 0.35);
-  border-top-color: #ffffff;
+  border: 2px solid var(--color-line);
+  border-top-color: var(--color-teal);
   border-radius: 50%;
   animation: map-spin 0.8s linear infinite;
 }
@@ -77,10 +84,10 @@
   bottom: 2.2rem;
   z-index: 2;
   padding: 0.75rem 0.9rem;
-  border-radius: 0.75rem;
-  color: #f4f7f6;
-  background: rgba(13, 27, 42, 0.86);
-  backdrop-filter: blur(8px);
+  border-radius: var(--radius-control);
+  color: var(--color-navy);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
 }
 
 .map-legend-title {
@@ -113,7 +120,7 @@
 }
 
 .map-legend-range {
-  opacity: 0.72;
+  color: var(--color-ink-muted);
 }
 
 /* Page hôte de la carte : elle doit occuper la hauteur de la fenêtre pour que
@@ -127,10 +134,12 @@
 .map-page-header {
   display: flex;
   flex-wrap: wrap;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
   padding: 1rem 1.5rem;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-line);
 }
 
 .map-page-header h1 {
