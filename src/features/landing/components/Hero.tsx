@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { useSignInToDashboard } from '../../auth/hooks/useSignInToDashboard';
 import { ArrowRightIcon, CheckCircleIcon, LeafIcon } from './icons';
 
 const TRUST_BADGES: readonly string[] = [
@@ -8,6 +8,8 @@ const TRUST_BADGES: readonly string[] = [
 ];
 
 function Hero() {
+  const signInToDashboard = useSignInToDashboard();
+
   return (
     <section className="lp-hero" aria-labelledby="lp-hero-title">
       <div className="lp-container lp-hero-inner">
@@ -23,13 +25,13 @@ function Hero() {
           sur votre territoire. Des decisions eclairees pour les collectivites locales.
         </p>
         <div className="lp-hero-actions">
-          <Link to="/signup" className="btn btn-cta">
+          <button type="button" className="btn btn-cta" onClick={signInToDashboard}>
             Commencer gratuitement
             <ArrowRightIcon className="btn-icon" />
-          </Link>
-          <Link to="/dashboard" className="btn btn-ghost">
+          </button>
+          <button type="button" className="btn btn-ghost" onClick={signInToDashboard}>
             Voir la demo
-          </Link>
+          </button>
         </div>
         <ul className="lp-trust" aria-label="Garanties">
           {TRUST_BADGES.map((badge) => (

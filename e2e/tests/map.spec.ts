@@ -1,3 +1,4 @@
+import { signInThroughLanding } from '../fixtures/auth';
 import { expect, test } from '@playwright/test';
 
 /**
@@ -61,7 +62,7 @@ test('la carte affiche les cellules et sa legende', async ({ page }) => {
 });
 
 test('le tableau de bord mene a la carte', async ({ page }) => {
-  await page.goto('/dashboard');
+  await signInThroughLanding(page);
   await page.getByRole('link', { name: 'Voir la carte' }).click();
 
   await expect(page).toHaveURL(/\/carte$/);

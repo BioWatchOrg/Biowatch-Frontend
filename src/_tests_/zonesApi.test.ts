@@ -1,21 +1,24 @@
 import type { AxiosAdapter, InternalAxiosRequestConfig } from 'axios';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { apiClient } from '../api/client';
-import {
-  exportZonePdf,
-  getAtRiskZones,
-  getDashboardKpis,
-  getZoneDetail,
-  getZonesCompare,
-} from '../api/zonesApi';
 
 const PARIS_BBOX: [number, number, number, number] = [2.25, 48.81, 2.42, 48.9];
 
 describe('zonesApi (network path)', () => {
-  const originalAdapter = apiClient.defaults.adapter;
   let requests: InternalAxiosRequestConfig[];
+  let getAtRiskZones: typeof import('../api/zonesApi').getAtRiskZones;
+  let getZoneDetail: typeof import('../api/zonesApi').getZoneDetail;
+  let getDashboardKpis: typeof import('../api/zonesApi').getDashboardKpis;
+  let getZonesCompare: typeof import('../api/zonesApi').getZonesCompare;
+  let exportZonePdf: typeof import('../api/zonesApi').exportZonePdf;
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    // The mock flag is a module-level constant: force it off (a local .env may enable it)
+    // and re-import so the network path is the one under test.
+    vi.stubEnv('VITE_USE_MOCKS', 'false');
+    vi.resetModules();
+    const { apiClient } = await import('../api/client');
+    ({ getAtRiskZones, getZoneDetail, getDashboardKpis, getZonesCompare, exportZonePdf } =
+      await import('../api/zonesApi'));
     requests = [];
     apiClient.defaults.adapter = (async (config: InternalAxiosRequestConfig) => {
       requests.push(config);
@@ -24,7 +27,8 @@ describe('zonesApi (network path)', () => {
   });
 
   afterEach(() => {
-    apiClient.defaults.adapter = originalAdapter;
+    vi.unstubAllEnvs();
+    vi.resetModules();
   });
 
   it('at-risk: serializes bbox as a comma list and keeps paging params', async () => {

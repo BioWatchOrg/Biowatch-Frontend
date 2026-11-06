@@ -1,32 +1,29 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { isAuthSessionActive, persistAuthSession } from '../features/auth/services/authSession';
 import DashboardPage from '../pages/DashboardPage';
 import LegalPlaceholderPage from '../pages/LegalPlaceholderPage';
+import { useUserStore } from '../store/userStore';
 
 describe('DashboardPage', () => {
-  beforeEach(() => window.localStorage.clear());
+  beforeEach(() => useUserStore.setState({ isAuthenticated: true }));
 
-  it('logs out and returns to the login page', async () => {
-    persistAuthSession('marie@bordeaux.fr');
-    expect(isAuthSessionActive()).toBe(true);
-
+  it('signs out and returns to the landing page', async () => {
     render(
       <MemoryRouter initialEntries={['/dashboard']}>
         <Routes>
           <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/login" element={<p>login page</p>} />
+          <Route path="/" element={<p>landing page</p>} />
         </Routes>
       </MemoryRouter>,
     );
 
     expect(screen.getByRole('heading', { level: 1, name: /Tableau de bord/i })).toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole('link', { name: /Se deconnecter/i }));
+    await userEvent.click(screen.getByRole('button', { name: /Se deconnecter/i }));
 
-    expect(isAuthSessionActive()).toBe(false);
-    expect(screen.getByText('login page')).toBeInTheDocument();
+    expect(useUserStore.getState().isAuthenticated).toBe(false);
+    expect(screen.getByText('landing page')).toBeInTheDocument();
   });
 });
 
