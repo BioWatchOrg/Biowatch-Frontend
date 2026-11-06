@@ -11,6 +11,7 @@ import {
 import { zonesToFeatureCollection } from '../utils/geojson';
 import MapStatus from './MapStatus';
 import ScoreLegend from './ScoreLegend';
+import ZoneDetailPanel from './ZoneDetailPanel';
 // Le CSS de MapLibre d'abord : `.maplibregl-map` impose sa propre position et
 // écraserait nos règles s'il était chargé après.
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -50,6 +51,7 @@ function StressScoreMap() {
         onRetry={retry}
       />
       <ScoreLegend />
+      <ZoneDetailPanel />
     </div>
   );
 }
