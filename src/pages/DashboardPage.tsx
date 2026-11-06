@@ -1,6 +1,5 @@
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useUserStore } from '../store/userStore';
-import { Link } from 'react-router-dom';
 
 function DashboardPage() {
   const navigate = useNavigate();
@@ -24,9 +23,9 @@ function DashboardPage() {
           <Link to="/carte" className="btn btn-cta">
             Voir la carte
           </Link>
-          <Link to="/login" className="btn btn-primary" onClick={handleSignOut}>
+          <button type="button" className="btn btn-primary" onClick={handleSignOut}>
             Se deconnecter
-          </Link>
+          </button>
         </div>
       </section>
     </main>

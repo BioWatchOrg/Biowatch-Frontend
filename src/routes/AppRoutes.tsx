@@ -3,6 +3,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import LandingPage from '../features/landing/pages/LandingPage';
 import DashboardPage from '../pages/DashboardPage';
 import LegalPlaceholderPage from '../pages/LegalPlaceholderPage';
+import RequireAuth from './RequireAuth';
 
 // MapLibre pèse à lui seul plus que tout le reste du bundle : la carte n'est
 // téléchargée que par qui s'y rend.
@@ -12,7 +13,14 @@ function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
-      <Route path="/dashboard" element={<DashboardPage />} />
+      <Route
+        path="/dashboard"
+        element={
+          <RequireAuth>
+            <DashboardPage />
+          </RequireAuth>
+        }
+      />
       <Route
         path="/carte"
         element={
