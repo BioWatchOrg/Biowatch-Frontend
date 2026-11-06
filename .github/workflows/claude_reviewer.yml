@@ -20,6 +20,10 @@ jobs:
         with:
           fetch-depth: 1
 
+      - name: Record start time
+        id: started
+        run: echo "ts=$(date -u +%s)" >> "$GITHUB_OUTPUT"
+
       # claude-code-action@v1 only accepts an inline `prompt`, not a file path —
       # load reviewer-prompt.md here so it stays a single external source of truth.
       # With a custom `prompt`, the action runs in automation mode and does NOT tell Claude which
@@ -50,3 +54,29 @@ jobs:
             --allowedTools "Read,Grep,Glob,Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr comment:*),Bash(gh issue view:*),Bash(cat:*)"
             --disallowedTools "Edit,Write,NotebookEdit"
           show_full_output: true
+
+      # Without this the job goes green even when the reviewer posted nothing, which reads as
+      # "reviewed" on the PR. The comment is the deliverable.
+      # Exception: a PR that edits this workflow is always skipped by claude-code-action
+      # (it must match the default branch), so there it is only a warning.
+      - name: The reviewer must have posted its comment
+        if: ${{ !cancelled() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          STARTED_AT: ${{ steps.started.outputs.ts }}
+          WORKFLOW_FILE: .github/workflows/claude_reviewer.yml
+        run: |
+          LATEST=$(gh api "repos/${REPO}/issues/${PR_NUMBER}/comments" --paginate \
+            --jq '.[] | select(.user.login == "claude[bot]") | .updated_at' | sort | tail -n 1)
+          if [ -n "$LATEST" ] && [ "$(date -u -d "$LATEST" +%s)" -ge "$STARTED_AT" ]; then
+            echo "Review comment posted at $LATEST."
+            exit 0
+          fi
+          if gh pr diff "$PR_NUMBER" --repo "$REPO" --name-only | grep -qx "$WORKFLOW_FILE"; then
+            echo "::warning::This PR edits ${WORKFLOW_FILE}: claude-code-action skips it until it is merged, so no review was posted."
+            exit 0
+          fi
+          echo "::error::The reviewer posted no comment during this run. Check the step above for a permission denial or an API error."
+          exit 1
